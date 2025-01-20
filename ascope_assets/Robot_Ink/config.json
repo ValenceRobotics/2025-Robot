@@ -1,0 +1,81 @@
+{
+  "name": "Ink",
+  "rotations": [
+    {
+      "axis": "x",
+      "degrees": 90
+    },
+    {
+      "axis": "z",
+      "degrees": 90
+    }
+  ],
+  "position": [
+    0.3556,
+    0.3556,
+    0.05
+  ],
+  "cameras": [
+    {
+      "name": "FrontVisionCam",
+      "rotations": [
+        {
+          "axis": "y",
+          "degrees": -22.9
+        }
+      ],
+      "position": [
+        0.2,
+        0,
+        0.2
+      ],
+      "resolution": [
+        960,
+        720
+      ],
+      "fov": 75
+    },
+    {
+      "name": "BackVisionCam",
+      "rotations": [
+        {
+          "axis": "y",
+          "degrees": -22.9
+        },
+        {
+          "axis": "z",
+          "degrees": 180
+        }
+      ],
+      "position": [
+        -0.2,
+        0,
+        0.2
+      ],
+      "resolution": [
+        960,
+        720
+      ],
+      "fov": 75
+    }
+  ],
+  "components": [
+    {
+      "zeroedRotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        },
+        {
+          "axis": "z",
+          "degrees": -180
+        }
+      ],
+      "zeroedPosition": [
+        -0.3556,
+        0.47,
+        -0.13
+      ]
+    }
+  ]
+}
