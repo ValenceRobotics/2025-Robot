@@ -17,10 +17,12 @@ public class ElevatorIOSim implements ElevatorIO {
           ElevatorConstants.kMaxElevatorHeightMeters,
           true,
           0);
-  private PIDController elevatorPID = new PIDController(5, 0, 0);
+  private PIDController elevatorPID = new PIDController(15, 0, 0);
   private ElevatorState currentState = ElevatorState.Home;
 
-  public ElevatorIOSim() {}
+  public ElevatorIOSim() {
+    elevatorPID.setTolerance(0.01);
+  }
 
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
@@ -30,13 +32,13 @@ public class ElevatorIOSim implements ElevatorIO {
         seekPosition(0);
         break;
       case L2:
-        seekPosition(Units.inchesToMeters(18));
+        seekPosition(0.2286);
         break;
       case L3:
-        seekPosition(Units.inchesToMeters(24));
+        seekPosition(0.6096);
         break;
       case L4:
-        seekPosition(Units.inchesToMeters(54));
+        seekPosition(1.3);
         break;
     }
 
