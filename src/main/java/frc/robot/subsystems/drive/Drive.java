@@ -75,7 +75,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  // Initialize ReefTags and CoralScoreLocation with placeholder alliance value
+  // Initialize ReefTags and CoralScoreLocation with alliance value
   static {
     ReefTags.initializeAlliance(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
     CoralScoreLocation.initializeAlliance(
@@ -197,9 +197,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
     scoreLocations = findClosestReefTag(getPose());
     Logger.recordOutput("Alignment/ScoringLocations", scoreLocations);
-
-    // TODO: logic for choosing which scoring location based on triggers, as well as auto alignment
-    // to position
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
