@@ -308,7 +308,7 @@ public class DriveCommands {
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
   public static Command alignToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-
+    //TODO: add output negation logic based on alliance color
     ProfiledPIDController xController =
         new ProfiledPIDController(
             TRANSLATION_KP,
