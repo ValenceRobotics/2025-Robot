@@ -47,6 +47,8 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+  private static final double TRANSLATION_KP = 3;
+  private static final double TRANSLATION_KD = 0.0;
 
   private DriveCommands() {}
 
@@ -290,6 +292,66 @@ public class DriveCommands {
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
                     })));
+  }
+
+  /**
+   * Creates a command that aligns the robot to a specified pose using PID controllers.
+   *
+   * @param drive The Drive subsystem to be controlled
+   * @param targetPose The target Pose2d (x, y, rotation) to align to
+   * @return A Command that continuously runs to align the robot to the target pose using separate
+   *     PID controllers for x, y, and angular movement
+   *     <p>The command uses: - ProfiledPIDController for X translation - ProfiledPIDController for
+   *     Y translation - ProfiledPIDController for angular rotation (configured for continuous input
+   *     from -π to π)
+   *     <p>Each controller calculates the error between current and target position/rotation and
+   *     outputs corresponding movement values that are fed into joystickDrive.
+   */
+  public static Command alignToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
+
+    ProfiledPIDController xController =
+        new ProfiledPIDController(
+            TRANSLATION_KP,
+            0.0,
+            TRANSLATION_KD,
+            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+
+    ProfiledPIDController yController =
+        new ProfiledPIDController(
+            TRANSLATION_KP,
+            0.0,
+            TRANSLATION_KD,
+            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+
+    ProfiledPIDController angleController =
+        new ProfiledPIDController(
+            3,
+            0.0,
+            0,
+            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+    angleController.enableContinuousInput(-Math.PI, Math.PI);
+
+    return Commands.run(
+        () -> {
+          // Calculate error
+          Pose2d targetPose = targetPoseSupplier.get();
+
+          double xError = targetPose.getX() - drive.getPose().getX();
+          double yError = targetPose.getY() - drive.getPose().getY();
+          double angleError =
+              targetPose.getRotation().minus(drive.getPose().getRotation()).getRadians();
+
+          double xOutput = MathUtil.clamp(xController.calculate(xError, 0), -1.0, 1.0);
+          double yOutput = MathUtil.clamp(yController.calculate(yError, 0), -1.0, 1.0);
+          double angleOutput = MathUtil.clamp(-angleController.calculate(angleError, 0), -1.0, 1.0);
+
+          DoubleSupplier xSupplier = () -> xOutput;
+          DoubleSupplier ySupplier = () -> yOutput;
+          DoubleSupplier omegaSupplier = () -> angleOutput;
+
+          joystickDrive(drive, xSupplier, ySupplier, omegaSupplier).execute();
+        },
+        drive);
   }
 
   private static class WheelRadiusCharacterizationState {

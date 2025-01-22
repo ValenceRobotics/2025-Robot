@@ -50,6 +50,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -62,16 +63,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
+  private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
   private Rotation2d rawGyroRotation = new Rotation2d();
-  private SwerveModulePosition[] lastModulePositions = // For delta tracking
+  private final SwerveModulePosition[] lastModulePositions = // For delta tracking
       new SwerveModulePosition[] {
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition(),
         new SwerveModulePosition()
       };
-  private SwerveDrivePoseEstimator poseEstimator =
+  private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
   // Initialize ReefTags and CoralScoreLocation with placeholder alliance value
@@ -81,13 +82,19 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
   }
 
+  private final Consumer<Pose2d> resetSimulationPoseCallBack;
+
+  Pose2d[] scoreLocations = {new Pose2d(), new Pose2d()};
+
   public Drive(
       GyroIO gyroIO,
       ModuleIO flModuleIO,
       ModuleIO frModuleIO,
       ModuleIO blModuleIO,
-      ModuleIO brModuleIO) {
+      ModuleIO brModuleIO,
+      Consumer<Pose2d> resetSimulationPoseCallBack) {
     this.gyroIO = gyroIO;
+    this.resetSimulationPoseCallBack = resetSimulationPoseCallBack;
     modules[0] = new Module(flModuleIO, 0);
     modules[1] = new Module(frModuleIO, 1);
     modules[2] = new Module(blModuleIO, 2);
@@ -188,14 +195,23 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
-    Pose2d[] scoringLocations = findClosestReefTag(getPose());
-    Logger.recordOutput("Alignment/ScoringLocations", scoringLocations);
+    scoreLocations = findClosestReefTag(getPose());
+    Logger.recordOutput("Alignment/ScoringLocations", scoreLocations);
 
     // TODO: logic for choosing which scoring location based on triggers, as well as auto alignment
     // to position
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+  }
+
+  /**
+   * Retrieves the array of possible scoring locations on the field.
+   *
+   * @return An array of Pose2d objects representing the scoring positions
+   */
+  public Pose2d[] getScoreLocations() {
+    return scoreLocations;
   }
 
   /**
@@ -374,6 +390,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   /** Resets the current odometry pose. */
   public void resetOdometry(Pose2d pose) {
+    resetSimulationPoseCallBack.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 

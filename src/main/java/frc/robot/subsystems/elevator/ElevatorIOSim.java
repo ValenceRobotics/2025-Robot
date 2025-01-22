@@ -1,7 +1,6 @@
 package frc.robot.subsystems.elevator;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import frc.robot.RobotState.ElevatorState;
 

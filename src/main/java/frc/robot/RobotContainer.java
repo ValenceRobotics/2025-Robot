@@ -68,7 +68,8 @@ public class RobotContainer {
                 new ModuleIOSpark(0),
                 new ModuleIOSpark(1),
                 new ModuleIOSpark(2),
-                new ModuleIOSpark(3));
+                new ModuleIOSpark(3),
+                (pose) -> {});
 
         this.vision =
             new Vision(
@@ -92,7 +93,8 @@ public class RobotContainer {
                 new ModuleIOSim(driveSimulation.getModules()[0]),
                 new ModuleIOSim(driveSimulation.getModules()[1]),
                 new ModuleIOSim(driveSimulation.getModules()[2]),
-                new ModuleIOSim(driveSimulation.getModules()[3]));
+                new ModuleIOSim(driveSimulation.getModules()[3]),
+                driveSimulation::setSimulationWorldPose);
 
         vision =
             new Vision(
@@ -115,7 +117,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                (pose) -> {});
         vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         break;
@@ -185,6 +188,7 @@ public class RobotContainer {
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
+    // temporary elevator commands
     controller
         .pov(0)
         .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.Home), elevator));
@@ -197,6 +201,15 @@ public class RobotContainer {
     controller
         .pov(135)
         .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.L4), elevator));
+
+    // reef alignment
+    controller
+        .pov(180)
+        .whileTrue(DriveCommands.alignToPose(drive, () -> drive.getScoreLocations()[0]));
+
+    controller
+        .pov(225)
+        .whileTrue(DriveCommands.alignToPose(drive, () -> drive.getScoreLocations()[1]));
   }
 
   /**
@@ -211,8 +224,8 @@ public class RobotContainer {
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
 
-    driveSimulation.setSimulationWorldPose(
-        new Pose2d(3, 3, new Rotation2d(Units.degreesToRadians(0))));
+    drive.resetOdometry(new Pose2d(3, 3, new Rotation2d()));
+
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 

@@ -184,15 +184,14 @@ public class DriveConstants {
     B(new Pose2d(2.84, 3.72, Rotation2d.fromDegrees(0))),
     C(new Pose2d(3.4, 2.7, Rotation2d.fromDegrees(60))),
     D(new Pose2d(3.8, 2.4, Rotation2d.fromDegrees(60))),
-    // TODO: set correct poses
-    E(new Pose2d(4.3, 2.7, Rotation2d.fromDegrees(-60))),
-    F(new Pose2d(4.9, 3.72, Rotation2d.fromDegrees(-60))),
-    G(new Pose2d(4.9, 4.25, Rotation2d.fromDegrees(0))),
-    H(new Pose2d(4.9, 4.78, Rotation2d.fromDegrees(-60))),
-    I(new Pose2d(4.3, 5.8, Rotation2d.fromDegrees(-60))),
-    J(new Pose2d(3.8, 6.1, Rotation2d.fromDegrees(0))),
-    K(new Pose2d(3.4, 5.8, Rotation2d.fromDegrees(60))),
-    L(new Pose2d(2.84, 4.78, Rotation2d.fromDegrees(60)));
+    E(new Pose2d(5.14, 2.50, Rotation2d.fromDegrees(120))),
+    F(new Pose2d(5.431, 2.66, Rotation2d.fromDegrees(120))),
+    G(new Pose2d(6.17, 3.84, Rotation2d.fromDegrees(180))),
+    H(new Pose2d(6.17, 4.18, Rotation2d.fromDegrees(180))),
+    I(new Pose2d(5.44, 5.40, Rotation2d.fromDegrees(-120))),
+    J(new Pose2d(5.14, 5.57, Rotation2d.fromDegrees(-120))),
+    K(new Pose2d(3.84, 5.56, Rotation2d.fromDegrees(-60))),
+    L(new Pose2d(3.53, 5.40, Rotation2d.fromDegrees(-60)));
 
     private final Pose2d pose;
 
