@@ -75,13 +75,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
-  // Initialize ReefTags and CoralScoreLocation with alliance value
-  static {
-    ReefTags.initializeAlliance(DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
-    CoralScoreLocation.initializeAlliance(
-        DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
-  }
-
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   Pose2d[] scoreLocations = {new Pose2d(), new Pose2d()};
@@ -142,6 +135,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   @Override
   public void periodic() {
+    // Initialize ReefTags and CoralScoreLocation with alliance value
+
+    ReefTags.initializeAlliance(
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
+    CoralScoreLocation.initializeAlliance(
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
+
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
     Logger.processInputs("Drive/Gyro", gyroInputs);
@@ -197,6 +197,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
     scoreLocations = findClosestReefTag(getPose());
     Logger.recordOutput("Alignment/ScoringLocations", scoreLocations);
+
+    Logger.recordOutput("Alignment/Alliance", DriverStation.getAlliance().orElse(Alliance.Blue));
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);

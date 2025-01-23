@@ -308,7 +308,7 @@ public class DriveCommands {
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
   public static Command alignToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    //TODO: add output negation logic based on alliance color
+    // TODO: add output negation logic based on alliance color
     ProfiledPIDController xController =
         new ProfiledPIDController(
             TRANSLATION_KP,
@@ -343,11 +343,13 @@ public class DriveCommands {
 
           double xOutput = MathUtil.clamp(xController.calculate(xError, 0), -1.0, 1.0);
           double yOutput = MathUtil.clamp(yController.calculate(yError, 0), -1.0, 1.0);
-          double angleOutput = MathUtil.clamp(-angleController.calculate(angleError, 0), -1.0, 1.0);
+          double angleOutput = MathUtil.clamp(angleController.calculate(angleError, 0), -1.0, 1.0);
 
-          DoubleSupplier xSupplier = () -> xOutput;
-          DoubleSupplier ySupplier = () -> yOutput;
-          DoubleSupplier omegaSupplier = () -> angleOutput;
+          double flipAlliance =
+              DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? -1 : 1;
+          DoubleSupplier xSupplier = () -> flipAlliance * xOutput;
+          DoubleSupplier ySupplier = () -> flipAlliance * yOutput;
+          DoubleSupplier omegaSupplier = () -> -angleOutput;
 
           joystickDrive(drive, xSupplier, ySupplier, omegaSupplier).execute();
         },

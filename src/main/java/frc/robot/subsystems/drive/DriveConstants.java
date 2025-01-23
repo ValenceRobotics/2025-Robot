@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -156,8 +157,8 @@ public class DriveConstants {
       this.pose = pose;
     }
 
-    public static void initializeAlliance(boolean isBlue) {
-      if (isBlue) {
+    public static void initializeAlliance(BooleanSupplier isBlue) {
+      if (isBlue.getAsBoolean()) {
         SIDE_AB.pose = aprilTagLayout.getTagPose(18);
         SIDE_CD.pose = aprilTagLayout.getTagPose(17);
         SIDE_EF.pose = aprilTagLayout.getTagPose(22);
@@ -180,8 +181,8 @@ public class DriveConstants {
   }
 
   public enum BlueCoralScoreLocation {
-    A(new Pose2d(2.84, 4.25, Rotation2d.fromDegrees(0))),
-    B(new Pose2d(2.84, 3.72, Rotation2d.fromDegrees(0))),
+    A(new Pose2d(3.28, 4.18, Rotation2d.fromDegrees(0))),
+    B(new Pose2d(3.28, 3.84, Rotation2d.fromDegrees(0))),
     C(new Pose2d(3.4, 2.7, Rotation2d.fromDegrees(60))),
     D(new Pose2d(3.8, 2.4, Rotation2d.fromDegrees(60))),
     E(new Pose2d(5.14, 2.50, Rotation2d.fromDegrees(120))),
@@ -206,9 +207,9 @@ public class DriveConstants {
 
   public enum RedCoralScoreLocation {
 
+    A(new Pose2d(14.27, 3.86, Rotation2d.fromDegrees(180))),
+    B(new Pose2d(14.27, 4.21, Rotation2d.fromDegrees(180))),
     // TODO: set correct poses
-    A(new Pose2d(2.84, 4.25, Rotation2d.fromDegrees(0))),
-    B(new Pose2d(2.84, 3.72, Rotation2d.fromDegrees(60))),
     C(new Pose2d(3.4, 2.7, Rotation2d.fromDegrees(60))),
     D(new Pose2d(3.8, 2.4, Rotation2d.fromDegrees(0))),
     E(new Pose2d(4.3, 2.7, Rotation2d.fromDegrees(-60))),
@@ -251,8 +252,8 @@ public class DriveConstants {
       this.pose = pose;
     }
 
-    public static void initializeAlliance(boolean isBlue) {
-      if (isBlue) {
+    public static void initializeAlliance(BooleanSupplier isBlue) {
+      if (isBlue.getAsBoolean()) {
         for (CoralScoreLocation location : values()) {
           location.pose = BlueCoralScoreLocation.valueOf(location.name()).getPose();
         }
