@@ -24,6 +24,8 @@ public interface VisionIO {
     public TargetObservation latestTargetObservation =
         new TargetObservation(new Rotation2d(), new Rotation2d());
     public PoseObservation[] poseObservations = new PoseObservation[0];
+    public SingleTagPoseObservation singleTagPoseObservations =
+        new SingleTagPoseObservation(0, 0, 0);
     public int[] tagIds = new int[0];
   }
 
@@ -38,6 +40,8 @@ public interface VisionIO {
       int tagCount,
       double averageTagDistance,
       PoseObservationType type) {}
+
+  record SingleTagPoseObservation(double timestamp, int tagId, double tagDistance) {}
 
   enum PoseObservationType {
     MEGATAG_1,

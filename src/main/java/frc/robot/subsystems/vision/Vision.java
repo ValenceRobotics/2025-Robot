@@ -20,12 +20,16 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
+import frc.robot.subsystems.vision.VisionIO.SingleTagPoseObservation;
+import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 import java.util.LinkedList;
 import java.util.List;
 import org.littletonrobotics.junction.Logger;
@@ -176,6 +180,8 @@ public class Vision extends SubsystemBase {
     Logger.recordOutput(
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
+
+    Logger.recordOutput("Vision/Single Tag Pose", getSingleTagPose(0));
   }
 
   @FunctionalInterface
@@ -184,5 +190,18 @@ public class Vision extends SubsystemBase {
         Pose2d visionRobotPoseMeters,
         double timestampSeconds,
         Matrix<N3, N1> visionMeasurementStdDevs);
+  }
+
+  //TODO: Figure out correct math for this
+  public Pose2d getSingleTagPose(int cameraIndex) {
+    SingleTagPoseObservation observation = inputs[cameraIndex].singleTagPoseObservations;
+    TargetObservation target = inputs[cameraIndex].latestTargetObservation;
+    double dist3d = observation.tagDistance();
+    double tx = target.tx().getRadians();
+    double ty = target.ty().getRadians();
+    Transform3d cameraPose = robotToCamera[cameraIndex];
+    double dist2d = dist3d * Math.cos(-cameraPose.getRotation().getY() + ty);
+    
+    return new Pose2d();
   }
 }

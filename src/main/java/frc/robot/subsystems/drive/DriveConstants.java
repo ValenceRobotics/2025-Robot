@@ -206,7 +206,6 @@ public class DriveConstants {
   }
 
   public enum RedCoralScoreLocation {
-
     A(new Pose2d(14.27, 3.86, Rotation2d.fromDegrees(180))),
     B(new Pose2d(14.27, 4.21, Rotation2d.fromDegrees(180))),
     // TODO: set correct poses
