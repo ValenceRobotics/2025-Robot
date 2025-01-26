@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
@@ -30,8 +31,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIO.SingleTagPoseObservation;
 import frc.robot.subsystems.vision.VisionIO.TargetObservation;
+import frc.robot.util.GeomUtil;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class Vision extends SubsystemBase {
@@ -39,10 +42,12 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
+  private final Supplier<Rotation2d> rotationSupplier;
 
-  public Vision(VisionConsumer consumer, VisionIO... io) {
+  public Vision(VisionConsumer consumer, Supplier<Rotation2d> rotationSupplier, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
+    this.rotationSupplier = rotationSupplier;
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -181,6 +186,7 @@ public class Vision extends SubsystemBase {
         "Vision/Summary/RobotPosesRejected",
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
+    // Log single tag pose
     Logger.recordOutput("Vision/Single Tag Pose", getSingleTagPose(0));
   }
 
@@ -192,16 +198,63 @@ public class Vision extends SubsystemBase {
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
 
-  //TODO: Figure out correct math for this
+
+  //NOTE: in sim, seems to be a few inches off laterally, but might behave differently on real robot
+  /**
+   * Calculates the robot's pose based on a single AprilTag observation from a specific camera.
+   *
+   * @param cameraIndex The index of the camera to get pose data from
+   * @return A Pose2d representing the robot's position and rotation in field coordinates.
+   *         Returns an empty pose (0,0,0) if the observed tag is not in the field layout.
+   *
+   * The method:
+   * 1. Gets the 3D distance to the tag and camera angles
+   * 2. Converts the 3D measurements to 2D field coordinates
+   * 3. Calculates the rotation between camera and tag
+   * 4. Uses the tag's known field position to determine robot position
+   * 5. Applies camera-to-robot transform to get final robot pose
+   */
   public Pose2d getSingleTagPose(int cameraIndex) {
     SingleTagPoseObservation observation = inputs[cameraIndex].singleTagPoseObservations;
     TargetObservation target = inputs[cameraIndex].latestTargetObservation;
+
     double dist3d = observation.tagDistance();
     double tx = target.tx().getRadians();
     double ty = target.ty().getRadians();
     Transform3d cameraPose = robotToCamera[cameraIndex];
     double dist2d = dist3d * Math.cos(-cameraPose.getRotation().getY() + ty);
-    
-    return new Pose2d();
+
+    Rotation2d camToTagRotation =
+        rotationSupplier
+            .get()
+            .plus(
+                Rotation2d.fromRadians(cameraPose.getRotation().getZ())
+                    .plus(Rotation2d.fromRadians(-tx)));
+
+    var optionalTagPose = VisionConstants.aprilTagLayout.getTagPose(observation.tagId());
+    if (optionalTagPose.isEmpty()) {
+      return new Pose2d(); // or handle the case appropriately
+    }
+    Pose2d tagPose2d = optionalTagPose.get().toPose2d();
+
+    Translation2d fieldToCameraTranslation =
+        new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
+            .transformBy(GeomUtil.toTransform2d(dist2d, 0.0))
+            .getTranslation();
+
+    Pose2d robotPose =
+        new Pose2d(
+                fieldToCameraTranslation,
+                rotationSupplier
+                    .get()
+                    .plus(Rotation2d.fromRadians(cameraPose.getRotation().getZ())))
+            .transformBy(
+                new Transform2d(
+                    new Pose3d(cameraPose.getTranslation(), cameraPose.getRotation()).toPose2d(),
+                    Pose2d.kZero));
+
+    robotPose = new Pose2d(robotPose.getTranslation(), rotationSupplier.get());
+
+    return robotPose;
   }
 }

@@ -74,6 +74,7 @@ public class RobotContainer {
         this.vision =
             new Vision(
                 drive,
+                drive::getRotation,
                 new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                 new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
         this.elevator = new Elevator(new ElevatorIOReal());
@@ -99,6 +100,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive,
+                drive::getRotation,
                 new VisionIOPhotonVisionSim(
                     camera0Name,
                     VisionConstants.robotToCamera0,
@@ -119,7 +121,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 (pose) -> {});
-        vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+        vision = new Vision(drive, drive::getRotation, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         break;
     }
@@ -205,11 +207,11 @@ public class RobotContainer {
     // reef alignment
     controller
         .pov(180)
-        .whileTrue(DriveCommands.alignToPose(drive, () -> drive.getScoreLocations()[0]));
+        .whileTrue(DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true));
 
     controller
         .pov(225)
-        .whileTrue(DriveCommands.alignToPose(drive, () -> drive.getScoreLocations()[1]));
+        .whileTrue(DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true));
   }
 
   /**

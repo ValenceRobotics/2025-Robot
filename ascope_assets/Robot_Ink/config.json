@@ -21,13 +21,13 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -22.9
+          "degrees": -20
         }
       ],
       "position": [
-        0.2,
-        0,
-        0.2
+        0.3048,
+        0.0254,
+        0.0762
       ],
       "resolution": [
         960,

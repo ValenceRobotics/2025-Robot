@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.vision.Vision;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -307,8 +309,7 @@ public class DriveCommands {
    *     <p>Each controller calculates the error between current and target position/rotation and
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
-  public static Command alignToPose(Drive drive, Supplier<Pose2d> targetPoseSupplier) {
-    // TODO: add output negation logic based on alliance color
+  public static Command alignToPose(Drive drive, Vision vision, Supplier<Pose2d> targetPoseSupplier, boolean useSingleTagPose) {
     ProfiledPIDController xController =
         new ProfiledPIDController(
             TRANSLATION_KP,
@@ -335,11 +336,18 @@ public class DriveCommands {
         () -> {
           // Calculate error
           Pose2d targetPose = targetPoseSupplier.get();
+          Pose2d currentPose = drive.getPose();
 
-          double xError = targetPose.getX() - drive.getPose().getX();
-          double yError = targetPose.getY() - drive.getPose().getY();
+          if (useSingleTagPose 
+              && vision.getSingleTagPose(0) != new Pose2d() 
+              && targetPose.minus(currentPose).getTranslation().getNorm() < 1) { //tune target distance condition
+            currentPose = vision.getSingleTagPose(0);
+          }
+
+          double xError = targetPose.getX() - currentPose.getX();
+          double yError = targetPose.getY() - currentPose.getY();
           double angleError =
-              targetPose.getRotation().minus(drive.getPose().getRotation()).getRadians();
+              targetPose.getRotation().minus(currentPose.getRotation()).getRadians();
 
           double xOutput = MathUtil.clamp(xController.calculate(xError, 0), -1.0, 1.0);
           double yOutput = MathUtil.clamp(yController.calculate(yError, 0), -1.0, 1.0);
