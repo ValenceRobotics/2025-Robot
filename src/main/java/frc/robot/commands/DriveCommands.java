@@ -31,7 +31,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.vision.Vision;
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -309,7 +308,8 @@ public class DriveCommands {
    *     <p>Each controller calculates the error between current and target position/rotation and
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
-  public static Command alignToPose(Drive drive, Vision vision, Supplier<Pose2d> targetPoseSupplier, boolean useSingleTagPose) {
+  public static Command alignToPose(
+      Drive drive, Vision vision, Supplier<Pose2d> targetPoseSupplier, boolean useSingleTagPose) {
     ProfiledPIDController xController =
         new ProfiledPIDController(
             TRANSLATION_KP,
@@ -338,9 +338,10 @@ public class DriveCommands {
           Pose2d targetPose = targetPoseSupplier.get();
           Pose2d currentPose = drive.getPose();
 
-          if (useSingleTagPose 
-              && vision.getSingleTagPose(0) != new Pose2d() 
-              && targetPose.minus(currentPose).getTranslation().getNorm() < 1) { //tune target distance condition
+          if (useSingleTagPose
+              && vision.getSingleTagPose(0) != new Pose2d()
+              && targetPose.minus(currentPose).getTranslation().getNorm()
+                  < 1) { // tune target distance condition
             currentPose = vision.getSingleTagPose(0);
           }
 

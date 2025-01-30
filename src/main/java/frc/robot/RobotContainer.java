@@ -27,6 +27,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.EndEffector.EndEffector;
+import frc.robot.subsystems.EndEffector.EndEffectorIO;
+import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
@@ -49,6 +52,7 @@ public class RobotContainer {
   private final Drive drive;
   private final Vision vision;
   private final Elevator elevator;
+  private final EndEffector endEffector;
   private SwerveDriveSimulation driveSimulation = null;
 
   // Controller
@@ -78,6 +82,7 @@ public class RobotContainer {
                 new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                 new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
         this.elevator = new Elevator(new ElevatorIOReal());
+        this.endEffector = new EndEffector(new EndEffectorIOReal());
         break;
       case SIM:
         // create a maple-sim swerve drive simulation instance
@@ -110,6 +115,7 @@ public class RobotContainer {
                     VisionConstants.robotToCamera1,
                     driveSimulation::getSimulatedDriveTrainPose));
         elevator = new Elevator(new ElevatorIOSim());
+        endEffector = new EndEffector(new EndEffectorIO() {});
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -123,6 +129,8 @@ public class RobotContainer {
                 (pose) -> {});
         vision = new Vision(drive, drive::getRotation, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
+        endEffector = new EndEffector(new EndEffectorIO() {});
+
         break;
     }
 
@@ -162,7 +170,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRawAxis(2)));
+            () -> -controller.getRightX()));
 
     // Lock to 0° when A button is held
     controller
@@ -207,11 +215,23 @@ public class RobotContainer {
     // reef alignment
     controller
         .pov(180)
-        .whileTrue(DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true));
+        .whileTrue(
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false));
 
     controller
         .pov(225)
-        .whileTrue(DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true));
+        .whileTrue(
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false));
+
+    controller
+        .leftTrigger()
+        .whileTrue(Commands.run(() -> endEffector.runVolts(3), endEffector))
+        .onFalse(Commands.run(() -> endEffector.runVolts(0), endEffector));
+    controller
+        .rightTrigger()
+        .whileTrue(Commands.run(() -> endEffector.runVolts(-3), endEffector))
+        .onFalse(Commands.run(() -> endEffector.runVolts(0), endEffector));
+    ;
   }
 
   /**

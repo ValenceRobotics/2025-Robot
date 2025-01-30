@@ -198,21 +198,18 @@ public class Vision extends SubsystemBase {
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
 
-
-  //NOTE: in sim, seems to be a few inches off laterally, but might behave differently on real robot
+  // NOTE: in sim, seems to be a few inches off laterally, but might behave differently on real
+  // robot
   /**
    * Calculates the robot's pose based on a single AprilTag observation from a specific camera.
    *
    * @param cameraIndex The index of the camera to get pose data from
-   * @return A Pose2d representing the robot's position and rotation in field coordinates.
-   *         Returns an empty pose (0,0,0) if the observed tag is not in the field layout.
-   *
-   * The method:
-   * 1. Gets the 3D distance to the tag and camera angles
-   * 2. Converts the 3D measurements to 2D field coordinates
-   * 3. Calculates the rotation between camera and tag
-   * 4. Uses the tag's known field position to determine robot position
-   * 5. Applies camera-to-robot transform to get final robot pose
+   * @return A Pose2d representing the robot's position and rotation in field coordinates. Returns
+   *     an empty pose (0,0,0) if the observed tag is not in the field layout.
+   *     <p>The method: 1. Gets the 3D distance to the tag and camera angles 2. Converts the 3D
+   *     measurements to 2D field coordinates 3. Calculates the rotation between camera and tag 4.
+   *     Uses the tag's known field position to determine robot position 5. Applies camera-to-robot
+   *     transform to get final robot pose
    */
   public Pose2d getSingleTagPose(int cameraIndex) {
     SingleTagPoseObservation observation = inputs[cameraIndex].singleTagPoseObservations;
