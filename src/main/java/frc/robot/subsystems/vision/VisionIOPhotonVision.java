@@ -49,7 +49,7 @@ public class VisionIOPhotonVision implements VisionIO {
     List<PoseObservation> poseObservations = new LinkedList<>();
     for (var result : camera.getAllUnreadResults()) {
       // Update latest target observation
-      if (result.hasTargets() && result.targets.size() == 1) {
+      if (result.hasTargets()) {
         inputs.latestTargetObservation =
             new TargetObservation(
                 Rotation2d.fromDegrees(result.getBestTarget().getYaw()),

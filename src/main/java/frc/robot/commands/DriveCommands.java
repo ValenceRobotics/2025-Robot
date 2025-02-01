@@ -37,6 +37,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class DriveCommands {
   private static final double DEADBAND = 0.1;
@@ -344,6 +345,8 @@ public class DriveCommands {
                   < 1) { // tune target distance condition
             currentPose = vision.getSingleTagPose(0);
           }
+
+          Logger.recordOutput("Alignment/Current Pose", currentPose);
 
           double xError = targetPose.getX() - currentPose.getX();
           double yError = targetPose.getY() - currentPose.getY();

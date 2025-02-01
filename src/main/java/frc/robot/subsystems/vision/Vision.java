@@ -20,9 +20,11 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
@@ -215,18 +217,25 @@ public class Vision extends SubsystemBase {
     SingleTagPoseObservation observation = inputs[cameraIndex].singleTagPoseObservations;
     TargetObservation target = inputs[cameraIndex].latestTargetObservation;
 
-    double dist3d = observation.tagDistance();
     double tx = target.tx().getRadians();
     double ty = target.ty().getRadians();
     Transform3d cameraPose = robotToCamera[cameraIndex];
-    double dist2d = dist3d * Math.cos(-cameraPose.getRotation().getY() + ty);
+
+    Translation2d camToTagTranslation =
+        new Pose3d(Translation3d.kZero, new Rotation3d(0, -ty, -tx))
+            .transformBy(
+                new Transform3d(
+                    new Translation3d(observation.tagDistance(), 0, 0), Rotation3d.kZero))
+            .getTranslation()
+            .rotateBy(new Rotation3d(0, cameraPose.getRotation().getY(), 0))
+            .toTranslation2d();
 
     Rotation2d camToTagRotation =
         rotationSupplier
             .get()
             .plus(
                 Rotation2d.fromRadians(cameraPose.getRotation().getZ())
-                    .plus(Rotation2d.fromRadians(-tx)));
+                    .plus(camToTagTranslation.getAngle()));
 
     var optionalTagPose = VisionConstants.aprilTagLayout.getTagPose(observation.tagId());
     if (optionalTagPose.isEmpty()) {
@@ -236,7 +245,7 @@ public class Vision extends SubsystemBase {
 
     Translation2d fieldToCameraTranslation =
         new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
-            .transformBy(GeomUtil.toTransform2d(dist2d, 0.0))
+            .transformBy(GeomUtil.toTransform2d(camToTagTranslation.getNorm(), 0.0))
             .getTranslation();
 
     Pose2d robotPose =

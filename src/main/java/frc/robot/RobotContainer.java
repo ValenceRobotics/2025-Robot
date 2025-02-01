@@ -170,7 +170,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRawAxis(2)));
 
     // Lock to 0° when A button is held
     controller
@@ -216,12 +216,12 @@ public class RobotContainer {
     controller
         .pov(180)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false));
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true));
 
     controller
         .pov(225)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false));
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true));
 
     controller
         .leftTrigger()

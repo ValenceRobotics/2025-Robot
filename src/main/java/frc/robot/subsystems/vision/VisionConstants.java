@@ -23,6 +23,21 @@ public class VisionConstants {
   public static AprilTagFieldLayout aprilTagLayout =
       AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
+  // used the json file for custom apriltag removal for photonvision sim which was able to see tags
+  // blocked by reef
+
+  //   public static AprilTagFieldLayout aprilTagLayout;
+
+  //   static {
+  //     try {
+  //       aprilTagLayout =
+  // AprilTagFieldLayout.loadFromResource("/frc/robot/util/2025AprilTags.json");
+  //       aprilTagLayout.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
+  //     } catch (IOException e) {
+  //       e.printStackTrace();
+  //     }
+  //   }
+
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "FrontVisionCam";
   public static String camera1Name = "BackVisionCam";
