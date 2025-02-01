@@ -200,8 +200,6 @@ public class Vision extends SubsystemBase {
         Matrix<N3, N1> visionMeasurementStdDevs);
   }
 
-  // NOTE: in sim, seems to be a few inches off laterally, but might behave differently on real
-  // robot
   /**
    * Calculates the robot's pose based on a single AprilTag observation from a specific camera.
    *
