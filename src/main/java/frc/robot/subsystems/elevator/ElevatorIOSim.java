@@ -59,7 +59,8 @@ public class ElevatorIOSim implements ElevatorIO {
         .maxVelocity(ElevatorConstants.maxVelocity)
         .maxAcceleration(ElevatorConstants.maxAcceleration)
         .allowedClosedLoopError(ElevatorConstants.allowedError);
-
+    Logger.recordOutput("Elevator/MaxVelocity", ElevatorConstants.maxVelocity);
+    Logger.recordOutput("Elevator/MaxAcceleration", ElevatorConstants.maxAcceleration);
     max.configure(elevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     maxSim = new SparkMaxSim(max, ElevatorConstants.m_elevatorMotors);
   }
@@ -114,7 +115,7 @@ public class ElevatorIOSim implements ElevatorIO {
   public void seekPosition(double position) {
     elevatorController.setReference(
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
-        ControlType.kPosition,
+        ControlType.kMAXMotionPositionControl,
         ClosedLoopSlot.kSlot0);
     Logger.recordOutput(
         "Elevator/Setpoint",

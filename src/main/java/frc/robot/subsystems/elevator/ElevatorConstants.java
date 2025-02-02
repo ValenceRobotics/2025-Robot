@@ -2,6 +2,7 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -25,13 +26,13 @@ public class ElevatorConstants {
   public static final double kD = 0;
 
   public static final double maxVelocity =
-      ElevatorMath.convertDistanceToRotations(Meters.of(5)).per(Second).in(RPM);
+      ElevatorMath.convertDistanceToRotations(Meters.of(1)).per(Second).in(RPM);
   public static final double maxAcceleration =
-      ElevatorMath.convertDistanceToRotations(Meters.of(10))
+      ElevatorMath.convertDistanceToRotations(Meters.of(2))
           .per(Second)
           .per(Second)
           .in(RPM.per(Second));
 
   public static final double allowedError =
-      ElevatorMath.convertDistanceToRotations(Meters.of(0.01)).per(Second).in(RPM);
+      ElevatorMath.convertDistanceToRotations(Meters.of(0.01)).in(Rotations);
 }
