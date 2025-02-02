@@ -7,6 +7,8 @@ public interface ElevatorIO {
   @AutoLog
   public static class ElevatorIOInputs {
     public double positionMeters = 0.0;
+    public double motorRotations = 0.0;
+    public double encoderRotations = 0.0;
     public double velocityMetersPerSec = 0.0;
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
