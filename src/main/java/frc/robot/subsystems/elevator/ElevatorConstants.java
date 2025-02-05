@@ -13,7 +13,7 @@ public class ElevatorConstants {
 
   public static final DCMotor m_elevatorMotors = DCMotor.getNEO(2);
   public static final double kElevatorGearing = 6;
-  public static final double kCarriageMassKg = Units.lbsToKilograms(16.142);
+  public static final double kCarriageMassKg = Units.lbsToKilograms(25);
   public static final double kElevatorDrumRadiusMeters = Units.inchesToMeters(0.829 / 2);
   public static final double kMinElevatorHeightMeters = 0;
   public static final double kMaxElevatorHeightMeters = Units.inchesToMeters(59.035);
@@ -22,8 +22,10 @@ public class ElevatorConstants {
   public static final int motorId2 = 12;
 
   public static final int currentLimit = 40;
-  public static final double kP = 0.1;
+  public static final double kP = 0.9;
   public static final double kD = 0;
+  public static final double kG = 0.762;
+  public static final double kV = 9.21;
 
   public static final double maxVelocity =
       ElevatorMath.convertDistanceToRotations(Meters.of(1)).per(Second).in(RPM);

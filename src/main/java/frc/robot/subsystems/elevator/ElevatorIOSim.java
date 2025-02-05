@@ -83,6 +83,10 @@ public class ElevatorIOSim implements ElevatorIO {
         break;
     }
 
+    if (m_elevatorSim.getPositionMeters() == 0) {
+      maxSim.setPosition(0);
+    }
+
     m_elevatorSim.setInput(maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
 
     m_elevatorSim.update(0.02);
@@ -115,8 +119,9 @@ public class ElevatorIOSim implements ElevatorIO {
   public void seekPosition(double position) {
     elevatorController.setReference(
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
-        ControlType.kMAXMotionPositionControl,
-        ClosedLoopSlot.kSlot0);
+        ControlType.kPosition,
+        ClosedLoopSlot.kSlot0,
+        ElevatorConstants.kG);
     Logger.recordOutput(
         "Elevator/Setpoint",
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations));
