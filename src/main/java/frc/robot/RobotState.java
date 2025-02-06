@@ -1,11 +1,130 @@
 package frc.robot;
 
-public class RobotState {
+import org.littletonrobotics.junction.Logger;
 
+public class RobotState {
+  private static RobotState instance = new RobotState();
+
+  // State enums
   public enum ElevatorState {
     Home,
     L2,
     L3,
     L4
   }
+
+  public enum DriveState {
+    Driving,
+    Aligning,
+    CloseToAlign
+  }
+
+  public enum CoralState {
+    HasCoral,
+    NoCoral
+  }
+
+  public enum EndEffectorState {
+    ScoreL1,
+    Score,
+    Stop,
+    Reverse
+  }
+
+  public enum IntakeState {
+    Intake,
+    Outtake,
+    Stop
+  }
+
+  // Private state tracking
+  private ElevatorState currentElevatorState = ElevatorState.Home;
+  private ElevatorState queuedElevatorState = ElevatorState.Home;
+  private DriveState driveState = DriveState.Driving;
+  private CoralState coralState = CoralState.NoCoral;
+  private EndEffectorState endEffectorState = EndEffectorState.Stop;
+  private IntakeState intakeState = IntakeState.Stop;
+
+  // Singleton accessor
+  public static RobotState getInstance() {
+    return instance;
+  }
+
+  // Elevator state management
+  public static void setQueuedElevatorState(ElevatorState state) {
+    instance.queuedElevatorState = state;
+    if (state == ElevatorState.Home) {
+      instance.currentElevatorState = ElevatorState.Home; // Home executes immediately
+    }
+    Logger.recordOutput("RobotState/QueuedElevatorState", state.toString());
+  }
+
+  public static ElevatorState getCurrentElevatorState() {
+    return instance.currentElevatorState;
+  }
+
+  public static void updateElevatorState() {
+    if (canExecuteQueuedState()) {
+      instance.currentElevatorState = instance.queuedElevatorState;
+      Logger.recordOutput(
+          "RobotState/CurrentElevatorState", instance.currentElevatorState.toString());
+    }
+  }
+
+  // Drive state management
+  public static void setDriveState(DriveState state) {
+    instance.driveState = state;
+    Logger.recordOutput("RobotState/DriveState", state.toString());
+  }
+
+  public static DriveState getDriveState() {
+    return instance.driveState;
+  }
+
+  // Coral state management
+  public static void setCoralState(CoralState state) {
+    instance.coralState = state;
+    if (state == CoralState.NoCoral) {
+      setQueuedElevatorState(ElevatorState.Home);
+    }
+    Logger.recordOutput("RobotState/CoralState", state.toString());
+  }
+
+  public static CoralState getCoralState() {
+    return instance.coralState;
+  }
+
+  // EndEffector state management
+  public static void setEndEffectorState(EndEffectorState state) {
+    instance.endEffectorState = state;
+    Logger.recordOutput("RobotState/EndEffectorState", state.toString());
+  }
+
+  public static EndEffectorState getEndEffectorState() {
+    return instance.endEffectorState;
+  }
+
+  // Intake state management
+  public static void setIntakeState(IntakeState state) {
+    instance.intakeState = state;
+    Logger.recordOutput("RobotState/IntakeState", state.toString());
+  }
+
+  public static IntakeState getIntakeState() {
+    return instance.intakeState;
+  }
+
+  // State validation
+  private static boolean canExecuteQueuedState() {
+    return true;
+    //TODO: implement these requirements
+    // if (instance.queuedElevatorState == ElevatorState.Home) {
+    //   return true; // Home state has no requirements
+    // }
+    // return instance.driveState == DriveState.CloseToAlign
+    //        && instance.coralState == CoralState.HasCoral;
+  }
+
+  // Private constructor for singleton
+  private RobotState() {}
 }

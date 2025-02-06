@@ -19,6 +19,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import frc.robot.RobotState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.util.ElevatorMath;
 import org.littletonrobotics.junction.Logger;
@@ -40,9 +41,8 @@ public class ElevatorIOSim implements ElevatorIO {
   private SparkMaxSim maxSim;
   private SparkClosedLoopController elevatorController;
 
-  private ElevatorState currentState = ElevatorState.Home;
-
   public ElevatorIOSim() {
+
     elevatorController = max.getClosedLoopController();
     var elevatorConfig = new SparkMaxConfig();
 
@@ -68,7 +68,9 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    switch (currentState) {
+    RobotState.updateElevatorState();
+
+    switch (RobotState.getCurrentElevatorState()) {
       case Home:
         seekPosition(0);
         break;
@@ -107,7 +109,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.motorRotations = maxSim.getPosition();
     inputs.velocityMetersPerSec = m_elevatorSim.getVelocityMetersPerSecond();
     inputs.currentAmps = new double[] {m_elevatorSim.getCurrentDrawAmps()};
-    inputs.state = currentState;
+    inputs.state = RobotState.getCurrentElevatorState();
   }
 
   @Override
@@ -135,6 +137,6 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void setElevatorState(ElevatorState state) {
-    currentState = state;
+    RobotState.setQueuedElevatorState(state);
   }
 }

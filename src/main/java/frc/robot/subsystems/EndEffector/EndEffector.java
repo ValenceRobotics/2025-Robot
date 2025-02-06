@@ -1,4 +1,4 @@
-package frc.robot.subsystems.EndEffector;
+package frc.robot.subsystems.endEffector;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
