@@ -24,8 +24,9 @@ public class ElevatorConstants {
   public static final int currentLimit = 40;
   public static final double kP = 0.9;
   public static final double kD = 0;
-  public static final double kG = 0.762;
-  public static final double kV = 9.21;
+  public static final double kG = 0.39;
+  public static final double kV =
+      9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
   public static final double maxVelocity =
       ElevatorMath.convertDistanceToRotations(Meters.of(1)).per(Second).in(RPM);

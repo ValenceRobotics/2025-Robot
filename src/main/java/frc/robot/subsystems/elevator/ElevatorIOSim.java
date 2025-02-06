@@ -117,11 +117,12 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void seekPosition(double position) {
+    double ff = ElevatorConstants.kG + ElevatorConstants.kV * (maxSim.getVelocity() / 60);
     elevatorController.setReference(
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
         ControlType.kPosition,
         ClosedLoopSlot.kSlot0,
-        ElevatorConstants.kG);
+        ff);
     Logger.recordOutput(
         "Elevator/Setpoint",
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations));
