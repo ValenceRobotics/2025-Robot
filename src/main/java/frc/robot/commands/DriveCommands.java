@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotState;
+import frc.robot.RobotState.DriveState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.vision.Vision;
@@ -344,6 +346,7 @@ public class DriveCommands {
               && targetPose.minus(currentPose).getTranslation().getNorm()
                   < 1) { // tune target distance condition
             currentPose = vision.getSingleTagPose(0);
+            RobotState.setDriveState(DriveState.CloseToAlign);
           }
 
           Logger.recordOutput("Alignment/Current Pose", currentPose);

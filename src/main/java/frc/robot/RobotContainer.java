@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.*;
@@ -218,12 +219,14 @@ public class RobotContainer {
     controller
         .pov(180)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true));
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true))
+        .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .pov(225)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true));
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true))
+        .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .leftTrigger()

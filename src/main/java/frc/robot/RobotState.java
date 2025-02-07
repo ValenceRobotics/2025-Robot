@@ -40,8 +40,9 @@ public class RobotState {
   // Private state tracking
   private ElevatorState currentElevatorState = ElevatorState.Home;
   private ElevatorState queuedElevatorState = ElevatorState.Home;
+  private DriveState previousDriveState = DriveState.Driving;
   private DriveState driveState = DriveState.Driving;
-  private CoralState coralState = CoralState.NoCoral;
+  private CoralState coralState = CoralState.HasCoral;
   private EndEffectorState endEffectorState = EndEffectorState.Stop;
   private IntakeState intakeState = IntakeState.Stop;
 
@@ -73,7 +74,14 @@ public class RobotState {
 
   // Drive state management
   public static void setDriveState(DriveState state) {
+    // Check for transition from CloseToAlign to Driving
+    if (instance.previousDriveState == DriveState.CloseToAlign && state == DriveState.Driving) {
+      setQueuedElevatorState(ElevatorState.Home);
+    }
+
+    instance.previousDriveState = instance.driveState;
     instance.driveState = state;
+    Logger.recordOutput("RobotState/PreviousDriveState", instance.previousDriveState.toString());
     Logger.recordOutput("RobotState/DriveState", state.toString());
   }
 
@@ -116,13 +124,11 @@ public class RobotState {
 
   // State validation
   private static boolean canExecuteQueuedState() {
-    return true;
-    //TODO: implement these requirements
-    // if (instance.queuedElevatorState == ElevatorState.Home) {
-    //   return true; // Home state has no requirements
-    // }
-    // return instance.driveState == DriveState.CloseToAlign
-    //        && instance.coralState == CoralState.HasCoral;
+    if (instance.queuedElevatorState == ElevatorState.Home) {
+      return true; // Home state has no requirements
+    }
+    return instance.driveState == DriveState.CloseToAlign
+        && instance.coralState == CoralState.HasCoral;
   }
 
   // Private constructor for singleton
