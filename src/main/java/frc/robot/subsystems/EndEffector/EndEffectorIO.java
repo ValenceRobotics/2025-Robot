@@ -1,8 +1,7 @@
 package frc.robot.subsystems.endEffector;
 
-import org.littletonrobotics.junction.AutoLog;
-
 import frc.robot.RobotState.EndEffectorState;
+import org.littletonrobotics.junction.AutoLog;
 
 public interface EndEffectorIO {
   @AutoLog

@@ -231,12 +231,20 @@ public class RobotContainer {
 
     controller
         .leftTrigger()
-        .whileTrue(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Score), endEffector))
-        .onFalse(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
+        .whileTrue(
+            Commands.runOnce(
+                () -> endEffector.setEndEffectorState(EndEffectorState.Score), endEffector))
+        .onFalse(
+            Commands.runOnce(
+                () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
     controller
         .rightTrigger()
-        .whileTrue(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Reverse), endEffector))
-        .onFalse(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
+        .whileTrue(
+            Commands.runOnce(
+                () -> endEffector.setEndEffectorState(EndEffectorState.Reverse), endEffector))
+        .onFalse(
+            Commands.runOnce(
+                () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
     ;
   }
 
