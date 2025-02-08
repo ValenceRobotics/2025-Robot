@@ -18,15 +18,24 @@ public class ElevatorConstants {
   public static final double kMinElevatorHeightMeters = 0;
   public static final double kMaxElevatorHeightMeters = Units.inchesToMeters(59.035);
 
+  
+
   public static final int motorId1 = 11;
   public static final int motorId2 = 12;
 
   public static final int currentLimit = 40;
-  public static final double kP = 0.9;
-  public static final double kD = 0;
-  public static final double kG = 0.39;
-  public static final double kV =
+  public static final double kPSim = 0.9;
+  public static final double kDSim = 0;
+  public static final double kGSim = 0.39;
+  public static final double kVSim =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
+
+    public static final double kPReal = 0.9;
+    public static final double kDReal = 0;
+    public static final double kGReal = 0.39;
+    public static final double kVReal =
+        9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
+
 
   public static final double maxVelocity =
       ElevatorMath.convertDistanceToRotations(Meters.of(1)).per(Second).in(RPM);

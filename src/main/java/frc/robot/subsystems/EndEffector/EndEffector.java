@@ -1,6 +1,8 @@
 package frc.robot.subsystems.endEffector;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState.EndEffectorState;
+
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
@@ -19,5 +21,8 @@ public class EndEffector extends SubsystemBase {
 
   public void runVolts(double volts) {
     io.setVoltage(volts);
+  }
+  public void setEndEffectorState(EndEffectorState state) {
+    io.setEndEffectorState(state);
   }
 }

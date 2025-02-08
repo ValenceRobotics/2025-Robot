@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
+import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
@@ -230,12 +231,12 @@ public class RobotContainer {
 
     controller
         .leftTrigger()
-        .whileTrue(Commands.run(() -> endEffector.runVolts(3), endEffector))
-        .onFalse(Commands.run(() -> endEffector.runVolts(0), endEffector));
+        .whileTrue(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Score), endEffector))
+        .onFalse(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
     controller
         .rightTrigger()
-        .whileTrue(Commands.run(() -> endEffector.runVolts(-3), endEffector))
-        .onFalse(Commands.run(() -> endEffector.runVolts(0), endEffector));
+        .whileTrue(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Reverse), endEffector))
+        .onFalse(Commands.runOnce(() -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
     ;
   }
 

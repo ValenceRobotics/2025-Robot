@@ -22,6 +22,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -44,6 +45,9 @@ public class DriveConstants {
         new Translation2d(-trackWidth / 2.0, wheelBase / 2.0),
         new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
+
+  public static final double bumperThickness = Units.inchesToMeters(3.5);
+  public static final double endEffectorOffset = Units.inchesToMeters(0);
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
@@ -125,6 +129,7 @@ public class DriveConstants {
 
   public static final DriveTrainSimulationConfig mapleSimConfig =
       DriveTrainSimulationConfig.Default()
+          .withBumperSize(Meters.of(0.89535), Meters.of(0.89535))
           .withCustomModuleTranslations(moduleTranslations)
           .withRobotMass(Kilogram.of(robotMassKg))
           .withGyro(COTS.ofPigeon2())
@@ -181,18 +186,126 @@ public class DriveConstants {
   }
 
   public enum BlueCoralScoreLocation {
-    A(new Pose2d(3.28, 4.18, Rotation2d.fromDegrees(0))),
-    B(new Pose2d(3.28, 3.84, Rotation2d.fromDegrees(0))),
-    C(new Pose2d(3.4, 2.7, Rotation2d.fromDegrees(60))),
-    D(new Pose2d(3.8, 2.4, Rotation2d.fromDegrees(60))),
-    E(new Pose2d(5.14, 2.50, Rotation2d.fromDegrees(120))),
-    F(new Pose2d(5.431, 2.66, Rotation2d.fromDegrees(120))),
-    G(new Pose2d(6.17, 3.84, Rotation2d.fromDegrees(180))),
-    H(new Pose2d(6.17, 4.18, Rotation2d.fromDegrees(180))),
-    I(new Pose2d(5.44, 5.40, Rotation2d.fromDegrees(-120))),
-    J(new Pose2d(5.14, 5.57, Rotation2d.fromDegrees(-120))),
-    K(new Pose2d(3.84, 5.56, Rotation2d.fromDegrees(-60))),
-    L(new Pose2d(3.53, 5.40, Rotation2d.fromDegrees(-60)));
+    A(
+        aprilTagLayout
+            .getTagPose(18)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    B(
+        aprilTagLayout
+            .getTagPose(18)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    C(
+        aprilTagLayout
+            .getTagPose(17)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    D(
+        aprilTagLayout
+            .getTagPose(17)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    E(
+        aprilTagLayout
+            .getTagPose(22)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    F(
+        aprilTagLayout
+            .getTagPose(22)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    G(
+        aprilTagLayout
+            .getTagPose(21)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    H(
+        aprilTagLayout
+            .getTagPose(21)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    I(
+        aprilTagLayout
+            .getTagPose(20)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    J(
+        aprilTagLayout
+            .getTagPose(20)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    K(
+        aprilTagLayout
+            .getTagPose(19)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    L(
+        aprilTagLayout
+            .getTagPose(19)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI))));
 
     private final Pose2d pose;
 
@@ -206,19 +319,126 @@ public class DriveConstants {
   }
 
   public enum RedCoralScoreLocation {
-    A(new Pose2d(14.27, 3.86, Rotation2d.fromDegrees(180))),
-    B(new Pose2d(14.27, 4.21, Rotation2d.fromDegrees(180))),
-    // TODO: set correct poses
-    C(new Pose2d(3.4, 2.7, Rotation2d.fromDegrees(60))),
-    D(new Pose2d(3.8, 2.4, Rotation2d.fromDegrees(0))),
-    E(new Pose2d(4.3, 2.7, Rotation2d.fromDegrees(-60))),
-    F(new Pose2d(4.9, 3.72, Rotation2d.fromDegrees(-60))),
-    G(new Pose2d(4.9, 4.25, Rotation2d.fromDegrees(0))),
-    H(new Pose2d(4.9, 4.78, Rotation2d.fromDegrees(-60))),
-    I(new Pose2d(4.3, 5.8, Rotation2d.fromDegrees(-60))),
-    J(new Pose2d(3.8, 6.1, Rotation2d.fromDegrees(0))),
-    K(new Pose2d(3.4, 5.8, Rotation2d.fromDegrees(60))),
-    L(new Pose2d(2.84, 4.78, Rotation2d.fromDegrees(60)));
+    A(
+        aprilTagLayout
+            .getTagPose(7)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    B(
+        aprilTagLayout
+            .getTagPose(7)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    C(
+        aprilTagLayout
+            .getTagPose(8)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    D(
+        aprilTagLayout
+            .getTagPose(8)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    E(
+        aprilTagLayout
+            .getTagPose(9)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    F(
+        aprilTagLayout
+            .getTagPose(9)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    G(
+        aprilTagLayout
+            .getTagPose(10)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    H(
+        aprilTagLayout
+            .getTagPose(10)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    I(
+        aprilTagLayout
+            .getTagPose(11)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    J(
+        aprilTagLayout
+            .getTagPose(11)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    K(
+        aprilTagLayout
+            .getTagPose(6)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI)))),
+    L(
+        aprilTagLayout
+            .getTagPose(6)
+            .get()
+            .toPose2d()
+            .plus(
+                new Transform2d(
+                    trackWidth / 2 + bumperThickness,
+                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    new Rotation2d(Math.PI))));
 
     private final Pose2d pose;
 

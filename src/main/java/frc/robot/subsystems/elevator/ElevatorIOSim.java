@@ -53,7 +53,7 @@ public class ElevatorIOSim implements ElevatorIO {
     elevatorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ElevatorConstants.kP, 0, ElevatorConstants.kD)
+        .pid(ElevatorConstants.kPSim, 0, ElevatorConstants.kDSim)
         .outputRange(-1, 1)
         .maxMotion
         .maxVelocity(ElevatorConstants.maxVelocity)
@@ -119,7 +119,7 @@ public class ElevatorIOSim implements ElevatorIO {
 
   @Override
   public void seekPosition(double position) {
-    double ff = ElevatorConstants.kG + ElevatorConstants.kV * (maxSim.getVelocity() / 60);
+    double ff = ElevatorConstants.kGSim + ElevatorConstants.kVSim * (maxSim.getVelocity() / 60);
     elevatorController.setReference(
         ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
         ControlType.kPosition,

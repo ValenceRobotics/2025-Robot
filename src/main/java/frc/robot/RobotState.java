@@ -27,7 +27,7 @@ public class RobotState {
   public enum EndEffectorState {
     ScoreL1,
     Score,
-    Stop,
+    Stopped,
     Reverse
   }
 
@@ -42,8 +42,8 @@ public class RobotState {
   private ElevatorState queuedElevatorState = ElevatorState.Home;
   private DriveState previousDriveState = DriveState.Driving;
   private DriveState driveState = DriveState.Driving;
-  private CoralState coralState = CoralState.HasCoral;
-  private EndEffectorState endEffectorState = EndEffectorState.Stop;
+  private CoralState coralState = CoralState.HasCoral; // set no coral later
+  private EndEffectorState endEffectorState = EndEffectorState.Stopped;
   private IntakeState intakeState = IntakeState.Stop;
 
   // Singleton accessor

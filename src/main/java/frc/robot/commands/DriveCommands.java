@@ -346,6 +346,9 @@ public class DriveCommands {
               && targetPose.minus(currentPose).getTranslation().getNorm()
                   < 1) { // tune target distance condition
             currentPose = vision.getSingleTagPose(0);
+          }
+
+          if (targetPose.minus(currentPose).getTranslation().getNorm() < 0.2) {
             RobotState.setDriveState(DriveState.CloseToAlign);
           }
 
