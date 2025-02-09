@@ -29,6 +29,7 @@ import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
@@ -201,18 +202,10 @@ public class RobotContainer {
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
     // temporary elevator commands
-    controller
-        .pov(0)
-        .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.Home), elevator));
-    controller
-        .pov(45)
-        .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.L2), elevator));
-    controller
-        .pov(90)
-        .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.L3), elevator));
-    controller
-        .pov(135)
-        .onTrue(Commands.runOnce(() -> elevator.setElevatorState(ElevatorState.L4), elevator));
+    controller.pov(0).onTrue(StateCommands.setMechanismState(ElevatorState.Home));
+    controller.pov(45).onTrue(StateCommands.setMechanismState(ElevatorState.L2));
+    controller.pov(90).onTrue(StateCommands.setMechanismState(ElevatorState.L3));
+    controller.pov(135).onTrue(StateCommands.setMechanismState(ElevatorState.L4));
 
     // reef alignment
     controller

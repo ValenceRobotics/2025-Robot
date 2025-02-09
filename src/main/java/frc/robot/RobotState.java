@@ -31,12 +31,6 @@ public class RobotState {
     Reverse
   }
 
-  public enum IntakeState {
-    Intake,
-    Outtake,
-    Stop
-  }
-
   // Private state tracking
   private ElevatorState currentElevatorState = ElevatorState.Home;
   private ElevatorState queuedElevatorState = ElevatorState.Home;
@@ -44,7 +38,6 @@ public class RobotState {
   private DriveState driveState = DriveState.Driving;
   private CoralState coralState = CoralState.HasCoral; // set no coral later
   private EndEffectorState endEffectorState = EndEffectorState.Stopped;
-  private IntakeState intakeState = IntakeState.Stop;
 
   // Singleton accessor
   public static RobotState getInstance() {
@@ -112,17 +105,7 @@ public class RobotState {
     return instance.endEffectorState;
   }
 
-  // Intake state management
-  public static void setIntakeState(IntakeState state) {
-    instance.intakeState = state;
-    Logger.recordOutput("RobotState/IntakeState", state.toString());
-  }
-
-  public static IntakeState getIntakeState() {
-    return instance.intakeState;
-  }
-
-  // State validation
+  // Elevator state validation
   private static boolean canExecuteQueuedState() {
     if (instance.queuedElevatorState == ElevatorState.Home) {
       return true; // Home state has no requirements
