@@ -11,16 +11,14 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.RobotState;
 import frc.robot.RobotState.CoralState;
-import frc.robot.RobotState.EndEffectorState;
 import frc.robot.RobotState.ElevatorState;
-
+import frc.robot.RobotState.EndEffectorState;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
   SparkMax leftMotor = new SparkMax(EndEffectorConstants.leftMotorId, MotorType.kBrushless);
   SparkMax rightMotor = new SparkMax(EndEffectorConstants.rightMotorId, MotorType.kBrushless);
   Canandcolor canandcolor = new Canandcolor(13);
-
 
   public EndEffectorIOReal() {
     var endEffectorConfig = new SparkMaxConfig();
@@ -50,7 +48,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     if (canandcolor.getProximity() <= 0.06) {
       RobotState.setCoralState(CoralState.HasCoral);
-    } else{
+    } else {
       RobotState.setCoralState(CoralState.NoCoral);
     }
 
