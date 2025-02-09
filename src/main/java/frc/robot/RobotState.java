@@ -25,7 +25,7 @@ public class RobotState {
   }
 
   public enum EndEffectorState {
-    ScoreL1,
+    Intake,
     Score,
     Stopped,
     Reverse

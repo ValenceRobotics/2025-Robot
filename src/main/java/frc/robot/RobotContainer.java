@@ -16,7 +16,6 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.reduxrobotics.canand.CanandEventLoop;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -68,7 +67,6 @@ public class RobotContainer {
   public RobotContainer() {
     switch (Constants.currentMode) {
       case REAL:
-        CanandEventLoop.getInstance();
         // Real robot, instantiate hardware IO implementations
         drive =
             new Drive(
@@ -241,7 +239,7 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(
             Commands.runOnce(
-                () -> endEffector.setEndEffectorState(EndEffectorState.Reverse), endEffector))
+                () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector))
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));

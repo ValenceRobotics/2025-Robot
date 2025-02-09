@@ -2,6 +2,7 @@ package frc.robot.subsystems.endEffector;
 
 import static frc.robot.util.SparkUtil.*;
 
+import com.reduxrobotics.sensors.canandcolor.Canandcolor;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -9,12 +10,17 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import frc.robot.RobotState;
+import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.EndEffectorState;
+import frc.robot.RobotState.ElevatorState;
+
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
   SparkMax leftMotor = new SparkMax(EndEffectorConstants.leftMotorId, MotorType.kBrushless);
   SparkMax rightMotor = new SparkMax(EndEffectorConstants.rightMotorId, MotorType.kBrushless);
+  Canandcolor canandcolor = new Canandcolor(13);
+
 
   public EndEffectorIOReal() {
     var endEffectorConfig = new SparkMaxConfig();
@@ -42,15 +48,30 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
 
+    if (canandcolor.getProximity() <= 0.06) {
+      RobotState.setCoralState(CoralState.HasCoral);
+    } else{
+      RobotState.setCoralState(CoralState.NoCoral);
+    }
+
     switch (RobotState.getEndEffectorState()) {
-      case Score:
-        setVoltage(-3.0);
+      case Intake:
+        if (RobotState.getCoralState() == CoralState.NoCoral) {
+          setVoltage(3.0);
+        } else {
+          setEndEffectorState(EndEffectorState.Stopped);
+        }
         break;
-      case ScoreL1:
-        leftMotor.setVoltage(-3.0);
-        rightMotor.setVoltage(1.0);
+      case Score:
+        if (RobotState.getCurrentElevatorState() == ElevatorState.Home) {
+          leftMotor.setVoltage(3);
+          rightMotor.setVoltage(-1);
+        } else {
+          setVoltage(3);
+        }
+        break;
       case Reverse:
-        setVoltage(3.0);
+        setVoltage(-3.0);
         break;
       case Stopped:
         stop();
