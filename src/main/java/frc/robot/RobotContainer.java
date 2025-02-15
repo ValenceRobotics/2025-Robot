@@ -140,7 +140,7 @@ public class RobotContainer {
         break;
     }
     //named commands declaration
-    NamedCommands.registerCommand("autoScore1", (StateCommands.setMechanismState(ElevatorState.L1).withTimeout(0.01))
+    NamedCommands.registerCommand("autoScore1", (StateCommands.setMechanismState(ElevatorState.Home).withTimeout(0.01))
                 .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
                 .andThen(new WaitCommand(1))
                 .andThen(StateCommands.setMechanismState(ElevatorState.Home))
