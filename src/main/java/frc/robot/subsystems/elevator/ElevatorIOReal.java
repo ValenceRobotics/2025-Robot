@@ -1,7 +1,5 @@
 package frc.robot.subsystems.elevator;
 
-import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotations;
 import static frc.robot.util.SparkUtil.*;
 
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -14,9 +12,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ElevatorState;
-import frc.robot.util.ElevatorMath;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOReal implements ElevatorIO {
@@ -24,8 +22,10 @@ public class ElevatorIOReal implements ElevatorIO {
   private SparkMax elevatorMaster = new SparkMax(ElevatorConstants.motorId1, MotorType.kBrushless);
   private SparkMax elevatorSlave = new SparkMax(ElevatorConstants.motorId2, MotorType.kBrushless);
   private SparkClosedLoopController elevatorController;
+  private DigitalInput revLimitSwitch = new DigitalInput(0);
 
   public ElevatorIOReal() {
+
     elevatorController = elevatorMaster.getClosedLoopController();
     var elevatorConfig = new SparkMaxConfig();
 
@@ -48,7 +48,7 @@ public class ElevatorIOReal implements ElevatorIO {
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(ElevatorConstants.currentLimit)
         .voltageCompensation(12.0);
-    elevatorSlaveConfig.follow(elevatorMaster, true);
+    elevatorSlaveConfig.follow(elevatorMaster, false);
 
     Logger.recordOutput("Elevator/MaxVelocity", ElevatorConstants.maxVelocity);
     Logger.recordOutput("Elevator/MaxAcceleration", ElevatorConstants.maxAcceleration);
@@ -76,31 +76,37 @@ public class ElevatorIOReal implements ElevatorIO {
     // might want to switcht to just raw rotations
 
     RobotState.updateElevatorState();
-
+    //tune setpoints on proper field
     switch (RobotState.getCurrentElevatorState()) {
       case Home:
         seekPosition(0);
         break;
+      case L1:
+        seekPosition(6.2 - 0.119);
+        break;
       case L2:
-        seekPosition(0.2286);
+        seekPosition(9.1 - 0.119);
         break;
       case L3:
-        seekPosition(0.6096);
+        seekPosition(18.3 - 0.119);
         break;
       case L4:
-        seekPosition(1.3);
+        seekPosition(32.6 - 0.02);
         break;
     }
 
     // TODO: rev limit switch zeroing
 
-    inputs.positionMeters = elevatorMaster.getEncoder().getPosition(); // convert to meters
+    Logger.recordOutput("Elevator/Limit Switch", getLimitSwitchState());
     inputs.appliedVolts = elevatorMaster.getBusVoltage();
     inputs.motorRotations = elevatorMaster.getEncoder().getPosition();
-    inputs.velocityMetersPerSec =
-        elevatorMaster.getEncoder().getVelocity(); // convert to meters per second
+    inputs.velocityRotationsPerSec = elevatorMaster.getEncoder().getVelocity();
     inputs.currentAmps = new double[] {elevatorMaster.getOutputCurrent()};
     inputs.state = RobotState.getCurrentElevatorState();
+  }
+
+  public boolean getLimitSwitchState() {
+    return revLimitSwitch.get();
   }
 
   @Override
@@ -110,22 +116,20 @@ public class ElevatorIOReal implements ElevatorIO {
 
   @Override
   public void seekPosition(double position) {
-    double ff =
-        ElevatorConstants.kGReal
-            + ElevatorConstants.kVReal * (elevatorMaster.getEncoder().getVelocity() / 60);
-    elevatorController.setReference(
-        ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
-        ControlType.kPosition,
-        ClosedLoopSlot.kSlot0,
-        ff);
-    Logger.recordOutput(
-        "Elevator/Setpoint",
-        ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations));
+    double ff = ElevatorConstants.kGReal;
+    // + ElevatorConstants.kVReal * (elevatorMaster.getEncoder().getVelocity() / 60);
+    elevatorController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
+    Logger.recordOutput("Elevator/Setpoint", position);
   }
 
   @Override
   public void stop() {
     setVoltage(0.0);
+  }
+
+  @Override
+  public void resetElevatorEncoder() {
+    elevatorMaster.getEncoder().setPosition(0);
   }
 
   @Override

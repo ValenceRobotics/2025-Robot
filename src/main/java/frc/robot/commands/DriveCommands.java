@@ -51,7 +51,7 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-  private static final double TRANSLATION_KP = 3;
+  private static final double TRANSLATION_KP = 0.5;
   private static final double TRANSLATION_KD = 0.0;
 
   private DriveCommands() {}
@@ -315,24 +315,14 @@ public class DriveCommands {
       Drive drive, Vision vision, Supplier<Pose2d> targetPoseSupplier, boolean useSingleTagPose) {
     ProfiledPIDController xController =
         new ProfiledPIDController(
-            TRANSLATION_KP,
-            0.0,
-            TRANSLATION_KD,
-            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.05, 0.1));
 
     ProfiledPIDController yController =
         new ProfiledPIDController(
-            TRANSLATION_KP,
-            0.0,
-            TRANSLATION_KD,
-            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.05, 0.1));
 
     ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            3,
-            0.0,
-            0,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+        new ProfiledPIDController(1, 0.0, 0, new TrapezoidProfile.Constraints(2, 5));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     return Commands.run(

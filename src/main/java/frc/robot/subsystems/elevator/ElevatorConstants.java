@@ -1,9 +1,7 @@
 package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.Second;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
@@ -28,19 +26,14 @@ public class ElevatorConstants {
   public static final double kVSim =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
-  public static final double kPReal = 0.9;
+  public static final double kPReal = 0.055;
   public static final double kDReal = 0;
-  public static final double kGReal = 0.39;
+  public static final double kGReal = 0.6;
   public static final double kVReal =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
-  public static final double maxVelocity =
-      ElevatorMath.convertDistanceToRotations(Meters.of(1)).per(Second).in(RPM);
-  public static final double maxAcceleration =
-      ElevatorMath.convertDistanceToRotations(Meters.of(2))
-          .per(Second)
-          .per(Second)
-          .in(RPM.per(Second));
+  public static final double maxVelocity = 30 * 60;
+  public static final double maxAcceleration = 1 * 36 * 60;
 
   public static final double allowedError =
       ElevatorMath.convertDistanceToRotations(Meters.of(0.01)).in(Rotations);

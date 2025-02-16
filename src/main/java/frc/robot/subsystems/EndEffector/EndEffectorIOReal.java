@@ -13,6 +13,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
+import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
 
@@ -46,6 +47,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
 
+    Logger.recordOutput("EndEffector/Proximity", canandcolor.getProximity());
+
     if (canandcolor.getProximity() <= 0.06) {
       RobotState.setCoralState(CoralState.HasCoral);
     } else {
@@ -55,15 +58,16 @@ public class EndEffectorIOReal implements EndEffectorIO {
     switch (RobotState.getEndEffectorState()) {
       case Intake:
         if (RobotState.getCoralState() == CoralState.NoCoral) {
-          setVoltage(3.0);
+          setVoltage(4.0);
         } else {
           setEndEffectorState(EndEffectorState.Stopped);
         }
         break;
       case Score:
-        if (RobotState.getCurrentElevatorState() == ElevatorState.Home) {
+        if (RobotState.getCurrentElevatorState() == ElevatorState.L1) {
           leftMotor.setVoltage(3);
           rightMotor.setVoltage(-1);
+          // setVoltage(3);
         } else {
           setVoltage(3);
         }

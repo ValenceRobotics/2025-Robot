@@ -8,6 +8,7 @@ public class RobotState {
   // State enums
   public enum ElevatorState {
     Home,
+    L1,
     L2,
     L3,
     L4
@@ -85,9 +86,6 @@ public class RobotState {
   // Coral state management
   public static void setCoralState(CoralState state) {
     instance.coralState = state;
-    if (state == CoralState.NoCoral) {
-      setQueuedElevatorState(ElevatorState.Home);
-    }
     Logger.recordOutput("RobotState/CoralState", state.toString());
   }
 
@@ -107,11 +105,13 @@ public class RobotState {
 
   // Elevator state validation
   private static boolean canExecuteQueuedState() {
-    if (instance.queuedElevatorState == ElevatorState.Home) {
-      return true; // Home state has no requirements
-    }
-    return instance.driveState == DriveState.CloseToAlign
-        && instance.coralState == CoralState.HasCoral;
+    return true;
+    //   if (instance.queuedElevatorState == ElevatorState.Home) {
+    //     return true; // Home state has no requirements
+    //   }
+    //   return instance.driveState == DriveState.CloseToAlign
+    //       && instance.coralState == CoralState.HasCoral;
+    // }
   }
 
   // Private constructor for singleton
