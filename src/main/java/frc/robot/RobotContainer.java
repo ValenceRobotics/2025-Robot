@@ -17,7 +17,6 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -25,22 +24,22 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.StateCommands;
+import frc.robot.subsystems.EndEffector.EndEffector;
+import frc.robot.subsystems.EndEffector.EndEffectorIO;
+import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.EndEffector.EndEffector;
-import frc.robot.subsystems.EndEffector.EndEffectorIO;
-import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
 import frc.robot.subsystems.vision.*;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -139,24 +138,26 @@ public class RobotContainer {
 
         break;
     }
-    //named commands declaration
-    NamedCommands.registerCommand("autoScore1", (StateCommands.setMechanismState(ElevatorState.Home).withTimeout(0.01))
-                .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
-                .andThen(new WaitCommand(1))
-                .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-    );
-    NamedCommands.registerCommand("autoScore4", (StateCommands.setMechanismState(ElevatorState.L4).withTimeout(0.01))
-                .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
-                .andThen(new WaitCommand(1))
-                .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-    );
-    NamedCommands.registerCommand("getCoralHp", (StateCommands.setMechanismState(EndEffectorState.Intake).withTimeout(0.01))
-    .andThen(new WaitCommand(1))
-    .andThen(StateCommands.setMechanismState(EndEffectorState.Intake))
-    );
+    // named commands declaration
+    NamedCommands.registerCommand(
+        "autoScore1",
+        (StateCommands.setMechanismState(ElevatorState.Home).withTimeout(0.01))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
+            .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+    NamedCommands.registerCommand(
+        "autoScore4",
+        (StateCommands.setMechanismState(ElevatorState.L4).withTimeout(0.01))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
+            .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+    NamedCommands.registerCommand(
+        "getCoralHp",
+        (StateCommands.setMechanismState(EndEffectorState.Intake).withTimeout(0.01))
+            .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Intake)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-
     // Set up SysId routines
     autoChooser.addOption(
         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
