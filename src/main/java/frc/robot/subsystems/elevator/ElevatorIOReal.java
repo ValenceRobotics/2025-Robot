@@ -22,7 +22,7 @@ public class ElevatorIOReal implements ElevatorIO {
   private SparkMax elevatorMaster = new SparkMax(ElevatorConstants.motorId1, MotorType.kBrushless);
   private SparkMax elevatorSlave = new SparkMax(ElevatorConstants.motorId2, MotorType.kBrushless);
   private SparkClosedLoopController elevatorController;
-  private DigitalInput revLimitSwitch = new DigitalInput(0);
+  private DigitalInput revLimitSwitch = new DigitalInput(9);
 
   public ElevatorIOReal() {
 
@@ -73,29 +73,29 @@ public class ElevatorIOReal implements ElevatorIO {
   @Override
   public void updateInputs(ElevatorIOInputs inputs) {
 
-    // might want to switcht to just raw rotations
+    if (!getLimitSwitchState()) {
+      resetElevatorEncoder();
+    }
 
     RobotState.updateElevatorState();
-    //tune setpoints on proper field
+    // tune setpoints on proper field
     switch (RobotState.getCurrentElevatorState()) {
       case Home:
         seekPosition(0);
         break;
       case L1:
-        seekPosition(6.2 - 0.119);
+        seekPosition(5.5);
         break;
       case L2:
-        seekPosition(9.1 - 0.119);
+        seekPosition(8.8);
         break;
       case L3:
-        seekPosition(18.3 - 0.119);
+        seekPosition(18);
         break;
       case L4:
-        seekPosition(32.6 - 0.02);
+        seekPosition(32);
         break;
     }
-
-    // TODO: rev limit switch zeroing
 
     Logger.recordOutput("Elevator/Limit Switch", getLimitSwitchState());
     inputs.appliedVolts = elevatorMaster.getBusVoltage();

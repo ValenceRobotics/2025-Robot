@@ -69,9 +69,9 @@ public class RobotState {
   // Drive state management
   public static void setDriveState(DriveState state) {
     // Check for transition from CloseToAlign to Driving
-    if (instance.previousDriveState == DriveState.CloseToAlign && state == DriveState.Driving) {
-      setQueuedElevatorState(ElevatorState.Home);
-    }
+    // if (instance.previousDriveState == DriveState.CloseToAlign && state == DriveState.Driving) {
+    //   setQueuedElevatorState(ElevatorState.Home);
+    // }
 
     instance.previousDriveState = instance.driveState;
     instance.driveState = state;
@@ -86,6 +86,7 @@ public class RobotState {
   // Coral state management
   public static void setCoralState(CoralState state) {
     instance.coralState = state;
+
     Logger.recordOutput("RobotState/CoralState", state.toString());
   }
 

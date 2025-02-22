@@ -28,7 +28,7 @@ public class ElevatorConstants {
 
   public static final double kPReal = 0.055;
   public static final double kDReal = 0;
-  public static final double kGReal = 0.6;
+  public static final double kGReal = 0.5;
   public static final double kVReal =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 

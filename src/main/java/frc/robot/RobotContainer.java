@@ -25,9 +25,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
-import frc.robot.RobotState.DriveState;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.drive.*;
@@ -119,6 +119,10 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     camera1Name,
                     VisionConstants.robotToCamera1,
+                    driveSimulation::getSimulatedDriveTrainPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera2Name,
+                    VisionConstants.robotToCamera2,
                     driveSimulation::getSimulatedDriveTrainPose));
         elevator = new Elevator(new ElevatorIOSim());
         endEffector = new EndEffector(new EndEffectorIO() {});
@@ -214,21 +218,24 @@ public class RobotContainer {
     controller.y().onTrue(StateCommands.setMechanismState(ElevatorState.L4));
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
+    // StateCommands.setMechanismState(ElevatorState.L1)
+    //     .andThen(new WaitCommand(0.2))
+    //     .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
     controller
         .rightBumper()
         .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
 
-    //reef alignment
+    // reef alignment
     controller
         .povLeft()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false))
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .povRight()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false))
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
@@ -247,6 +254,7 @@ public class RobotContainer {
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
+    
   }
 
   /**

@@ -33,7 +33,7 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 public class DriveConstants {
-  public static final double maxSpeedMetersPerSec = 5.33;
+  public static final double maxSpeedMetersPerSec = 5.02;
   public static final double odometryFrequency = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(28);
   public static final double wheelBase = Units.inchesToMeters(28);
@@ -46,8 +46,8 @@ public class DriveConstants {
         new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
 
-  public static final double bumperThickness = Units.inchesToMeters(3.5);
-  public static final double endEffectorOffset = Units.inchesToMeters(0);
+  public static final double bumperThickness = Units.inchesToMeters(6);
+  public static final double endEffectorOffset = Units.inchesToMeters(2);
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
@@ -69,8 +69,8 @@ public class DriveConstants {
   public static final int backRightTurnCanId = 8;
 
   // Drive motor configuration
-  public static final int driveMotorCurrentLimit = 60;
-  public static final double wheelRadiusMeters = Units.inchesToMeters(1.5);
+  public static final int driveMotorCurrentLimit = 44;
+  public static final double wheelRadiusMeters = Units.inchesToMeters(1.689);
   public static final double driveMotorReduction =
       (45.0 * 22.0) / (13.0 * 15.0); // MAXSwerve with 13 pinion teeth and 22 spur teeth
   public static final DCMotor driveGearbox = DCMotor.getNeoVortex(1);
@@ -84,8 +84,8 @@ public class DriveConstants {
   // Drive PID configuration
   public static final double driveKp = 0.0;
   public static final double driveKd = 0.0;
-  public static final double driveKs = 0.0;
-  public static final double driveKv = 0.1;
+  public static final double driveKs = 0.137458;
+  public static final double driveKv = 0.083178;
   public static final double driveSimP = 0.05;
   public static final double driveSimD = 0.0;
   public static final double driveSimKs = 0.0;
@@ -146,7 +146,7 @@ public class DriveConstants {
                   wheelCOF));
 
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
   public enum ReefTags {
     SIDE_AB(null),
@@ -194,7 +194,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     B(
         aprilTagLayout
@@ -214,7 +214,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     D(
         aprilTagLayout
@@ -234,7 +234,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     F(
         aprilTagLayout
@@ -254,7 +254,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     H(
         aprilTagLayout
@@ -274,7 +274,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     J(
         aprilTagLayout
@@ -294,7 +294,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    -Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    -Units.inchesToMeters(13 / 2) - endEffectorOffset,
                     new Rotation2d(Math.PI)))),
     L(
         aprilTagLayout

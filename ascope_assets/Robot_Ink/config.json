@@ -21,7 +21,7 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -14
+          "degrees": -22
         },
         {
           "axis": "z",
@@ -29,9 +29,9 @@
         }
       ],
       "position": [
-        0.2899,
+        0.303,
         0.1769,
-        0.0793
+        0.1335
       ],
       "resolution": [
         1280,
@@ -44,17 +44,40 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -20
+          "degrees": -22
         },
         {
           "axis": "z",
-          "degrees": 40
+          "degrees": 50
         }
       ],
       "position": [
-        0.315,
+        0.303,
         -0.1762,
-        0.0793
+        0.1524
+      ],
+      "resolution": [
+        1280,
+        800
+      ],
+      "fov": 70
+    },
+    {
+      "name": "BackCam",
+      "rotations": [
+        {
+          "axis": "y",
+          "degrees": -30
+        },
+        {
+          "axis": "z",
+          "degrees": 180
+        }
+      ],
+      "position": [
+        -0.302,
+        0,
+        0.1335
       ],
       "resolution": [
         1280,
