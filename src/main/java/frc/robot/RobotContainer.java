@@ -272,7 +272,6 @@ public class RobotContainer {
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
-    
   }
 
   /**
