@@ -148,23 +148,25 @@ public class RobotContainer {
     // named commands declaration
     NamedCommands.registerCommand(
         "autoScore1",
-        (StateCommands.setMechanismState(ElevatorState.Home).withTimeout(0.01))
+        (StateCommands.setMechanismState(ElevatorState.L1))
+            .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
-            .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+            .andThen(StateCommands.setMechanismState(ElevatorState.Home)).withTimeout(1));
     NamedCommands.registerCommand(
         "autoScore4",
-        (StateCommands.setMechanismState(ElevatorState.L4).withTimeout(0.01))
+        (StateCommands.setMechanismState(ElevatorState.L4))
+            .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
-            .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+            .andThen(StateCommands.setMechanismState(ElevatorState.Home)).withTimeout(1));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake).withTimeout(0.01))
             .andThen(new WaitCommand(1))
-            .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped)));
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped)).withTimeout(.5));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
