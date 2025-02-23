@@ -163,12 +163,9 @@ public class RobotContainer {
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .withTimeout(1));
+            .withTimeout(4));
     NamedCommands.registerCommand(
-        "getCoralHp",
-        (StateCommands.setMechanismState(EndEffectorState.Intake))
-            .withTimeout(1.5
-            ));
+        "getCoralHp", (StateCommands.setMechanismState(EndEffectorState.Intake)).withTimeout(1.5));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
