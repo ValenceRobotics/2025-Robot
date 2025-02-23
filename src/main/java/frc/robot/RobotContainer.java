@@ -56,12 +56,13 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
-  private final Elevator elevator;
+  public final Elevator elevator;
   private final EndEffector endEffector;
   private SwerveDriveSimulation driveSimulation = null;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -84,8 +85,10 @@ public class RobotContainer {
             new Vision(
                 drive,
                 drive::getRotation,
-                new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
-                new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+                new VisionIOPhotonVision(
+                    VisionConstants.camera0Name, VisionConstants.robotToCamera0),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
         this.elevator = new Elevator(new ElevatorIOReal());
         this.endEffector = new EndEffector(new EndEffectorIOReal());
         break;
@@ -118,6 +121,10 @@ public class RobotContainer {
                 new VisionIOPhotonVisionSim(
                     camera1Name,
                     VisionConstants.robotToCamera1,
+                    driveSimulation::getSimulatedDriveTrainPose),
+                new VisionIOPhotonVisionSim(
+                    VisionConstants.camera2Name,
+                    VisionConstants.robotToCamera2,
                     driveSimulation::getSimulatedDriveTrainPose));
         elevator = new Elevator(new ElevatorIOSim());
         endEffector = new EndEffector(new EndEffectorIO() {});
@@ -191,7 +198,10 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRawAxis(2)));
+            () -> -controller.getRightX()));
+    // temporary elevator manual
+    // elevator.setDefaultCommand(
+    //     Commands.run(() -> elevator.runVolts(-3 * operatorController.getLeftY()), elevator));
 
     // Lock to 0° when A button is held
     controller
@@ -220,22 +230,30 @@ public class RobotContainer {
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
     // temporary elevator commands
-    controller.pov(0).onTrue(StateCommands.setMechanismState(ElevatorState.Home));
-    controller.pov(45).onTrue(StateCommands.setMechanismState(ElevatorState.L2));
-    controller.pov(90).onTrue(StateCommands.setMechanismState(ElevatorState.L3));
-    controller.pov(135).onTrue(StateCommands.setMechanismState(ElevatorState.L4));
+    controller.a().onTrue(StateCommands.setMechanismState(ElevatorState.L1));
+    controller.b().onTrue(StateCommands.setMechanismState(ElevatorState.L2));
+    controller.x().onTrue(StateCommands.setMechanismState(ElevatorState.L3));
+    controller.y().onTrue(StateCommands.setMechanismState(ElevatorState.L4));
+
+    controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
+    // StateCommands.setMechanismState(ElevatorState.L1)
+    //     .andThen(new WaitCommand(0.2))
+    //     .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+    controller
+        .rightBumper()
+        .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
 
     // reef alignment
     controller
-        .pov(180)
+        .povLeft()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], true))
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
-        .pov(225)
+        .povRight()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], true))
+            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
@@ -254,7 +272,7 @@ public class RobotContainer {
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
-    ;
+    
   }
 
   /**

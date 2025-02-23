@@ -51,7 +51,7 @@ public class DriveCommands {
   private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
   private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-  private static final double TRANSLATION_KP = 3;
+  private static final double TRANSLATION_KP = 2.0;
   private static final double TRANSLATION_KD = 0.0;
 
   private DriveCommands() {}
@@ -225,6 +225,8 @@ public class DriveCommands {
                   System.out.println("********** Drive FF Characterization Results **********");
                   System.out.println("\tkS: " + formatter.format(kS));
                   System.out.println("\tkV: " + formatter.format(kV));
+                  Logger.recordOutput("DriveFF/KS", kS);
+                  Logger.recordOutput("Drive/KV", kV);
                 }));
   }
 
@@ -295,6 +297,9 @@ public class DriveCommands {
                               + " meters, "
                               + formatter.format(Units.metersToInches(wheelRadius))
                               + " inches");
+                      Logger.recordOutput("DriveWHeelRadius/Radius Meters", wheelRadius);
+                      Logger.recordOutput(
+                          "DriveWHeelRadius/Radius Inches", Units.metersToInches(wheelRadius));
                     })));
   }
 
@@ -312,27 +317,21 @@ public class DriveCommands {
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
   public static Command alignToPose(
-      Drive drive, Vision vision, Supplier<Pose2d> targetPoseSupplier, boolean useSingleTagPose) {
+      Drive drive,
+      Vision vision,
+      Supplier<Pose2d> targetPoseSupplier,
+      boolean useSingleTagPose,
+      int camIndex) {
     ProfiledPIDController xController =
         new ProfiledPIDController(
-            TRANSLATION_KP,
-            0.0,
-            TRANSLATION_KD,
-            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
 
     ProfiledPIDController yController =
         new ProfiledPIDController(
-            TRANSLATION_KP,
-            0.0,
-            TRANSLATION_KD,
-            new TrapezoidProfile.Constraints(drive.getMaxLinearSpeedMetersPerSec(), 9.6));
+            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
 
     ProfiledPIDController angleController =
-        new ProfiledPIDController(
-            3,
-            0.0,
-            0,
-            new TrapezoidProfile.Constraints(ANGLE_MAX_VELOCITY, ANGLE_MAX_ACCELERATION));
+        new ProfiledPIDController(3, 0.0, 0.0, new TrapezoidProfile.Constraints(4, 10));
     angleController.enableContinuousInput(-Math.PI, Math.PI);
 
     return Commands.run(
@@ -340,12 +339,13 @@ public class DriveCommands {
           // Calculate error
           Pose2d targetPose = targetPoseSupplier.get();
           Pose2d currentPose = drive.getPose();
-
+          Logger.recordOutput("Alignment/UsingSingleTag", "false");
           if (useSingleTagPose
-              && vision.getSingleTagPose(0) != new Pose2d()
+              && vision.getSingleTagPose(camIndex) != new Pose2d()
               && targetPose.minus(currentPose).getTranslation().getNorm()
-                  < 1) { // tune target distance condition
+                  < 0.5) { // tune target distance condition
             currentPose = vision.getSingleTagPose(0);
+            Logger.recordOutput("Alignment/UsingSingleTag", "true");
           }
 
           if (targetPose.minus(currentPose).getTranslation().getNorm() < 0.2) {

@@ -47,6 +47,10 @@ public class Elevator extends SubsystemBase {
     io.setElevatorState(state);
   }
 
+  public void resetElevatorEncoder() {
+    io.resetElevatorEncoder();
+  }
+
   // Todo: add methods, add elevator poses, figure out state logic
 
 }
