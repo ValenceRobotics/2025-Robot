@@ -151,18 +151,20 @@ public class RobotContainer {
         (StateCommands.setMechanismState(ElevatorState.Home).withTimeout(0.01))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4).withTimeout(0.01))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake).withTimeout(0.01))
             .andThen(new WaitCommand(1))
-            .andThen(StateCommands.setMechanismState(EndEffectorState.Intake)));
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
