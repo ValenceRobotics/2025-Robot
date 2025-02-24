@@ -1,0 +1,97 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "start to I"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "I to HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getCoralHp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP to K"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "K to HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getCoralHp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP to L"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L to HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getCoralHp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP to A "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
