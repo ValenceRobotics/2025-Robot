@@ -29,7 +29,6 @@ import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToPose;
 import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
@@ -230,15 +229,21 @@ public class RobotContainer {
     controller
         .pov(180)
         .whileTrue(
-            new DriveToPose(drive, () -> drive.getScoreLocations()[0], () -> drive.getPose()))
+            DriveCommands.alignToReef(
+                drive, () -> drive.getScoreLocations()[0], () -> drive.getPose()))
+
         // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
+        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .pov(225)
         .whileTrue(
-            new DriveToPose(drive, () -> drive.getScoreLocations()[1], () -> drive.getPose()))
+            DriveCommands.alignToReef(
+                drive, () -> drive.getScoreLocations()[1], () -> drive.getPose()))
+
         // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
+        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller

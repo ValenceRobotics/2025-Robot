@@ -33,6 +33,9 @@ import frc.robot.RobotState.DriveState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.FieldConstants.Reef;
+import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableNumber;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.LinkedList;
@@ -53,6 +56,9 @@ public class DriveCommands {
   private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
   private static final double TRANSLATION_KP = 2.0;
   private static final double TRANSLATION_KD = 0.0;
+
+  private static final LoggedTunableNumber maxDistanceReefLineup =
+      new LoggedTunableNumber("AutoScore/MaxDistanceReefLineup", 1);
 
   private DriveCommands() {}
 
@@ -374,9 +380,30 @@ public class DriveCommands {
         drive);
   }
 
+  public static Command alignToReef(Drive drive, Supplier<Pose2d> target, Supplier<Pose2d> robot) {
+    return new DriveToPose(drive, () -> getDriveTarget(robot.get(), target.get()), robot);
+  }
+
   private static class WheelRadiusCharacterizationState {
     double[] positions = new double[4];
     Rotation2d lastAngle = new Rotation2d();
     double gyroDelta = 0.0;
+  }
+
+  private static Pose2d getDriveTarget(Pose2d robot, Pose2d goal) {
+    // Final line up
+    var offset = robot.relativeTo(goal);
+    double yDistance = Math.abs(offset.getY());
+    double xDistance = Math.abs(offset.getX());
+    double shiftXT =
+        MathUtil.clamp(
+            (yDistance / (Reef.faceLength * 2)) + ((xDistance - 0.3) / (Reef.faceLength * 3)),
+            0.0,
+            1.0);
+    double shiftYT = MathUtil.clamp(offset.getX() / Reef.faceLength, 0.0, 1.0);
+    return goal.transformBy(
+        GeomUtil.toTransform2d(
+            -shiftXT * maxDistanceReefLineup.get(),
+            Math.copySign(shiftYT * maxDistanceReefLineup.get() * 0.8, offset.getY())));
   }
 }
