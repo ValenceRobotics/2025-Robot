@@ -82,7 +82,7 @@ public class RobotContainer {
         this.vision =
             new Vision(
                 drive,
-                drive::getRotation,
+                drive::getPose,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
@@ -111,7 +111,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive,
-                drive::getRotation,
+                drive::getPose,
                 new VisionIOPhotonVisionSim(
                     camera0Name,
                     VisionConstants.robotToCamera0,
@@ -137,7 +137,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 (pose) -> {});
-        vision = new Vision(drive, drive::getRotation, new VisionIO() {}, new VisionIO() {});
+        vision = new Vision(drive, drive::getPose, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
 
@@ -230,7 +230,9 @@ public class RobotContainer {
         .pov(180)
         .whileTrue(
             DriveCommands.alignToReef(
-                drive, () -> drive.getScoreLocations()[0], () -> drive.getPose()))
+                drive,
+                () -> drive.getScoreLocations()[0],
+                () -> vision.getReefPose(0, drive.getScoreLocations()[0])))
 
         // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
         // old method
@@ -240,7 +242,9 @@ public class RobotContainer {
         .pov(225)
         .whileTrue(
             DriveCommands.alignToReef(
-                drive, () -> drive.getScoreLocations()[1], () -> drive.getPose()))
+                drive,
+                () -> drive.getScoreLocations()[1],
+                () -> vision.getReefPose(1, drive.getScoreLocations()[1])))
 
         // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
         // old method
