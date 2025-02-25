@@ -70,7 +70,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
             || RobotState.getCurrentElevatorState() == ElevatorState.L3) {
-          setVoltage(6);
+          setVoltage(8);
         } else {
           setVoltage(3);
         }

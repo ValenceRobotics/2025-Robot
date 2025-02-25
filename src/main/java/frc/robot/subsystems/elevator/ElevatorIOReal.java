@@ -55,7 +55,6 @@ public class ElevatorIOReal implements ElevatorIO {
     Logger.recordOutput("Elevator/MaxAcceleration", ElevatorConstants.maxAcceleration);
     SmartDashboard.putNumber("hi", 1);
 
-
     tryUntilOk(
         elevatorMaster,
         5,
