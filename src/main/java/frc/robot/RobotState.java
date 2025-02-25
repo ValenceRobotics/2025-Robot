@@ -11,7 +11,8 @@ public class RobotState {
     L1,
     L2,
     L3,
-    L4
+    L4, 
+    testing
   }
 
   public enum DriveState {

@@ -13,6 +13,7 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ElevatorState;
 import org.littletonrobotics.junction.Logger;
@@ -52,6 +53,8 @@ public class ElevatorIOReal implements ElevatorIO {
 
     Logger.recordOutput("Elevator/MaxVelocity", ElevatorConstants.maxVelocity);
     Logger.recordOutput("Elevator/MaxAcceleration", ElevatorConstants.maxAcceleration);
+    SmartDashboard.putNumber("hi", 1);
+
 
     tryUntilOk(
         elevatorMaster,
@@ -95,6 +98,8 @@ public class ElevatorIOReal implements ElevatorIO {
       case L4:
         seekPosition(32);
         break;
+      case testing:
+        seekPosition(SmartDashboard.getNumber("hi", 0));
     }
 
     Logger.recordOutput("Elevator/Limit Switch", getLimitSwitchState());

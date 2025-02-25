@@ -240,6 +240,7 @@ public class RobotContainer {
     controller.b().onTrue(StateCommands.setMechanismState(ElevatorState.L2));
     controller.x().onTrue(StateCommands.setMechanismState(ElevatorState.L3));
     controller.y().onTrue(StateCommands.setMechanismState(ElevatorState.L4));
+    controller.povUp().onTrue(StateCommands.setMechanismState(ElevatorState.testing));
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
     // StateCommands.setMechanismState(ElevatorState.L1)
