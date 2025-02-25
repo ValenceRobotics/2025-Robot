@@ -393,6 +393,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
+  @AutoLogOutput(key = "RobotState/FieldVelocity")
+  public ChassisSpeeds getFieldVelocity() {
+    return ChassisSpeeds.fromRobotRelativeSpeeds(getChassisSpeeds(), getRotation());
+  }
+
   /** Adds a new timestamped vision measurement. */
   @Override
   public void accept(

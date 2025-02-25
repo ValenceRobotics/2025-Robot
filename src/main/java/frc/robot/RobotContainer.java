@@ -29,6 +29,7 @@ import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToPose;
 import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.elevator.Elevator;
@@ -180,7 +181,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRawAxis(2)));
     // temporary elevator manual
     // elevator.setDefaultCommand(
     //     Commands.run(() -> elevator.runVolts(-3 * operatorController.getLeftY()), elevator));
@@ -227,15 +228,17 @@ public class RobotContainer {
 
     // reef alignment
     controller
-        .povLeft()
+        .pov(180)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
+            new DriveToPose(drive, () -> drive.getScoreLocations()[0], () -> drive.getPose()))
+        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
-        .povRight()
+        .pov(225)
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
+            new DriveToPose(drive, () -> drive.getScoreLocations()[1], () -> drive.getPose()))
+        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
@@ -254,7 +257,6 @@ public class RobotContainer {
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
-    
   }
 
   /**
