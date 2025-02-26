@@ -488,4 +488,29 @@ public class DriveConstants {
       return pose;
     }
   }
+
+  public enum HPTags {
+    LEFT_STATION(null),
+    RIGHT_STATION(null);
+
+    private Pose2d pose;
+
+    HPTags(Pose2d pose) {
+      this.pose = pose;
+    }
+
+    public static void initializeAlliance(BooleanSupplier isBlue) {
+      if (isBlue.getAsBoolean()) {
+        LEFT_STATION.pose = aprilTagLayout.getTagPose(13).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagLayout.getTagPose(12).get().toPose2d();
+      } else {
+        LEFT_STATION.pose = aprilTagLayout.getTagPose(1).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagLayout.getTagPose(2).get().toPose2d();
+      }
+    }
+
+    public Pose2d getPose() {
+      return pose;
+    }
+  }
 }

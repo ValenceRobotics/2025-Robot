@@ -45,9 +45,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
+import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
@@ -78,6 +80,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   Pose2d[] scoreLocations = {new Pose2d(), new Pose2d()};
+
+  private Pose2d closestHPTag = new Pose2d();
 
   public Drive(
       GyroIO gyroIO,
@@ -141,6 +145,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
     CoralScoreLocation.initializeAlliance(
         () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
+    HPTags.initializeAlliance(
+        () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue);
 
     odometryLock.lock(); // Prevents odometry updates while reading data
     gyroIO.updateInputs(gyroInputs);
@@ -200,8 +206,15 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
     Logger.recordOutput("Alignment/Alliance", DriverStation.getAlliance().orElse(Alliance.Blue));
 
+    closestHPTag =
+        getPose().nearest(List.of(HPTags.LEFT_STATION.getPose(), HPTags.RIGHT_STATION.getPose()));
+
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+  }
+
+  public Pose2d getClosestHPTagPose() {
+    return closestHPTag;
   }
 
   /**

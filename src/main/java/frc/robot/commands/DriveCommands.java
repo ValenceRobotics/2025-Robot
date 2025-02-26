@@ -322,6 +322,8 @@ public class DriveCommands {
    *     <p>Each controller calculates the error between current and target position/rotation and
    *     outputs corresponding movement values that are fed into joystickDrive.
    */
+
+  // NOTE: Old version
   public static Command alignToPose(
       Drive drive,
       Vision vision,
@@ -390,6 +392,17 @@ public class DriveCommands {
     double gyroDelta = 0.0;
   }
 
+  /**
+   * Calculates a target pose for driving relative to a goal position. This method determines an
+   * optimal intermediate target position for the robot to facilitate smooth approach to the final
+   * goal
+   *
+   * @param robot The current pose (position and rotation) of the robot
+   * @param goal The desired final pose to reach
+   * @return A modified target pose that helps create a smooth approach path by adjusting the target
+   *     based on the robot's relative position to the goal, taking into account both X and Y
+   *     distances
+   */
   private static Pose2d getDriveTarget(Pose2d robot, Pose2d goal) {
     // Final line up
     var offset = robot.relativeTo(goal);

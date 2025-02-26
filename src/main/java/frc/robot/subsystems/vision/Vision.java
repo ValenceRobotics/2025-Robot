@@ -197,8 +197,8 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
     // Log single tag pose
-    Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
-    Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
+    // Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
+    // Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
   }
 
   @FunctionalInterface
@@ -273,6 +273,16 @@ public class Vision extends SubsystemBase {
     return robotPose;
   }
 
+  /**
+   * Calculates a blended pose between the robot's estimated pose and a single tag based pose.
+   *
+   * @param camIndex The index of the camera to get the tag pose from
+   * @param finalPose The final destination pose used to calculate blending factor
+   * @return A blended Pose2d between estimated and tag-based poses based on distance to final pose:
+   *     - Returns estimated pose if no tag is visible - Interpolates between tag pose and estimated
+   *     pose based on distance: - More weight on tag pose when closer to minDistanceTagPoseBlend -
+   *     More weight on estimated pose when closer to maxDistanceTagPoseBlend
+   */
   public Pose2d getReefPose(int camIndex, Pose2d finalPose) {
     var tagPose = getSingleTagPose(camIndex);
     // Use estimated pose if tag pose is not present
