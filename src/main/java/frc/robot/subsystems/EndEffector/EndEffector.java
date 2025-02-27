@@ -1,4 +1,4 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.EndEffector;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState.EndEffectorState;

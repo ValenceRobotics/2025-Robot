@@ -7,43 +7,43 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to I"
+            "pathName": "start to F"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "score1I"
+            "name": "autoScore1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "I to HP"
+            "pathName": "F to HP"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "getCoralHP1"
+            "name": "getCoralHp"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "HP to K"
+            "pathName": "HP to D"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "score1K"
+            "name": "autoScore1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "K to HP"
+            "pathName": "D to HP"
           }
         }
       ]

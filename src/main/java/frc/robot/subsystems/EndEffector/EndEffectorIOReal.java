@@ -1,4 +1,4 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.EndEffector;
 
 import static frc.robot.util.SparkUtil.*;
 
@@ -70,7 +70,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
             || RobotState.getCurrentElevatorState() == ElevatorState.L3) {
-          setVoltage(6);
+          setVoltage(6.5);
         } else {
           setVoltage(3);
         }

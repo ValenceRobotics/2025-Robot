@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to I"
+            "pathName": "start to F"
           }
         },
         {
@@ -19,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "I to HP"
+            "pathName": "F to HP"
           }
         },
         {
@@ -31,7 +31,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "HP to K"
+            "pathName": "HP to D"
           }
         },
         {
@@ -43,7 +43,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "K to HP"
+            "pathName": "D to HP"
           }
         },
         {
@@ -55,7 +55,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "HP to L"
+            "pathName": "HP to C"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "C to HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getCoralHp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP to B"
           }
         },
         {

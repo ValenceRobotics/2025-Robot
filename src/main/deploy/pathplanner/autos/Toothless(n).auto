@@ -63,6 +63,30 @@
           "data": {
             "name": "autoScore4"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L to HP"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "getCoralHp"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HP to A "
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
+          }
         }
       ]
     }

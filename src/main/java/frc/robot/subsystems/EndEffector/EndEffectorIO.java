@@ -1,4 +1,4 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.EndEffector;
 
 import frc.robot.RobotState.EndEffectorState;
 import org.littletonrobotics.junction.AutoLog;

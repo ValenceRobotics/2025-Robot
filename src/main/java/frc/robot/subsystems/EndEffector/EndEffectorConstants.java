@@ -1,4 +1,4 @@
-package frc.robot.subsystems.endEffector;
+package frc.robot.subsystems.EndEffector;
 
 public class EndEffectorConstants {
   public static final int leftMotorId = 9;
