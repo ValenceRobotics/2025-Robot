@@ -112,8 +112,8 @@ public class DriveConstants {
   public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
   // PathPlanner configuration
-  public static final double robotMassKg = 50;
-  public static final double robotMOI = 6.883;
+  public static final double robotMassKg = 52.161;
+  public static final double robotMOI = 5.777;
   public static final double wheelCOF = 1.5;
   public static final RobotConfig ppConfig =
       new RobotConfig(

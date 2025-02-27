@@ -205,11 +205,7 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRawAxis(2)));
-    // temporary elevator manual
-    // elevator.setDefaultCommand(
-    //     Commands.run(() -> elevator.runVolts(-3 * operatorController.getLeftY()), elevator));
 
-    // Lock to 0° when A button is held
     controller
         .pov(270)
         .whileTrue(
@@ -243,9 +239,7 @@ public class RobotContainer {
     controller.povUp().onTrue(StateCommands.setMechanismState(ElevatorState.testing));
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
-    // StateCommands.setMechanismState(ElevatorState.L1)
-    //     .andThen(new WaitCommand(0.2))
-    //     .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
+
     controller
         .rightBumper()
         .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));

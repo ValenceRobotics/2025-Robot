@@ -2,6 +2,8 @@ package frc.robot.subsystems.EndEffector;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState.EndEffectorState;
+import frc.robot.subsystems.endEffector.EndEffectorIOInputsAutoLogged;
+
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffector extends SubsystemBase {
