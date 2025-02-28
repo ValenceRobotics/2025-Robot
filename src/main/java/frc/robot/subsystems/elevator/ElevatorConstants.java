@@ -6,6 +6,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import frc.robot.util.ElevatorMath;
+import frc.robot.util.LoggedTunableNumber;
 
 public class ElevatorConstants {
 
@@ -26,9 +27,9 @@ public class ElevatorConstants {
   public static final double kVSim =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
-  public static final double kPReal = 0.055;
-  public static final double kDReal = 0;
-  public static final double kGReal = 0.5;
+  public static LoggedTunableNumber kPReal = new LoggedTunableNumber("Elevator/kP", 0.055);
+  public static LoggedTunableNumber kDReal = new LoggedTunableNumber("Elevator/kD", 0.);
+  public static LoggedTunableNumber kGReal = new LoggedTunableNumber("Elevator/kG", 0.5);
   public static final double kVReal =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 

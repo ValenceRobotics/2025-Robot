@@ -205,7 +205,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     C(
         aprilTagLayout
@@ -225,7 +225,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     E(
         aprilTagLayout
@@ -245,7 +245,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     G(
         aprilTagLayout
@@ -265,7 +265,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     I(
         aprilTagLayout
@@ -285,7 +285,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     K(
         aprilTagLayout
@@ -305,7 +305,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI))));
 
     private final Pose2d pose;

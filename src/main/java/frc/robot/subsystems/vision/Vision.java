@@ -197,8 +197,8 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
     // Log single tag pose
-    // Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
-    // Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
+    Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
+    Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
   }
 
   @FunctionalInterface

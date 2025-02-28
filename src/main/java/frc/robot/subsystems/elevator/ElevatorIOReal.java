@@ -37,7 +37,7 @@ public class ElevatorIOReal implements ElevatorIO {
     elevatorConfig
         .closedLoop
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(ElevatorConstants.kPReal, 0, ElevatorConstants.kDReal)
+        .pid(ElevatorConstants.kPReal.get(), 0, ElevatorConstants.kDReal.get())
         .outputRange(-1, 1)
         .maxMotion
         .maxVelocity(ElevatorConstants.maxVelocity)
@@ -120,7 +120,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
   @Override
   public void seekPosition(double position) {
-    double ff = ElevatorConstants.kGReal;
+    double ff = ElevatorConstants.kGReal.get();
     // + ElevatorConstants.kVReal * (elevatorMaster.getEncoder().getVelocity() / 60);
     elevatorController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
     Logger.recordOutput("Elevator/Setpoint", position);

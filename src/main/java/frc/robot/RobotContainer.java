@@ -204,10 +204,10 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRawAxis(2)));
+            () -> -controller.getRightX()));
 
     controller
-        .pov(270)
+        .rightBumper()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
@@ -240,13 +240,13 @@ public class RobotContainer {
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
 
-    controller
-        .rightBumper()
-        .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
+    // controller
+    //     .rightBumper()
+    //     .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
 
     // reef alignment
     controller
-        .pov(180)
+        .povLeft()
         .whileTrue(
             DriveCommands.alignToReef(
                 drive,
@@ -258,7 +258,7 @@ public class RobotContainer {
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
-        .pov(225)
+        .povRight()
         .whileTrue(
             DriveCommands.alignToReef(
                 drive,
