@@ -84,7 +84,7 @@ public class RobotContainer {
         this.vision =
             new Vision(
                 drive,
-                drive::getRotation,
+                drive::getPose,
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
@@ -113,7 +113,7 @@ public class RobotContainer {
         vision =
             new Vision(
                 drive,
-                drive::getRotation,
+                drive::getPose,
                 new VisionIOPhotonVisionSim(
                     camera0Name,
                     VisionConstants.robotToCamera0,
@@ -139,7 +139,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 (pose) -> {});
-        vision = new Vision(drive, drive::getRotation, new VisionIO() {}, new VisionIO() {});
+        vision = new Vision(drive, drive::getPose, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
 
@@ -205,19 +205,15 @@ public class RobotContainer {
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
-    // temporary elevator manual
-    // elevator.setDefaultCommand(
-    //     Commands.run(() -> elevator.runVolts(-3 * operatorController.getLeftY()), elevator));
 
-    // Lock to 0° when A button is held
     controller
-        .a()
+        .rightBumper()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
-                () -> new Rotation2d()));
+                () -> drive.getClosestHPTagPose().getRotation()));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -243,24 +239,34 @@ public class RobotContainer {
     controller.povUp().onTrue(StateCommands.setMechanismState(ElevatorState.testing));
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
-    // StateCommands.setMechanismState(ElevatorState.L1)
-    //     .andThen(new WaitCommand(0.2))
-    //     .andThen(StateCommands.setMechanismState(ElevatorState.Home)));
-    controller
-        .rightBumper()
-        .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
+
+    // controller
+    //     .rightBumper()
+    //     .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
 
     // reef alignment
     controller
         .povLeft()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
+            DriveCommands.alignToReef(
+                drive,
+                () -> drive.getScoreLocations()[0],
+                () -> vision.getReefPose(0, drive.getScoreLocations()[0])))
+
+        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
+        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .povRight()
         .whileTrue(
-            DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
+            DriveCommands.alignToReef(
+                drive,
+                () -> drive.getScoreLocations()[1],
+                () -> vision.getReefPose(1, drive.getScoreLocations()[1])))
+
+        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
+        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller

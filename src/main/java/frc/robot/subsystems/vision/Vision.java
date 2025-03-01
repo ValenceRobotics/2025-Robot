@@ -15,6 +15,7 @@ package frc.robot.subsystems.vision;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -27,6 +28,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -34,6 +36,7 @@ import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIO.SingleTagPoseObservation;
 import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 import frc.robot.util.GeomUtil;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -44,12 +47,17 @@ public class Vision extends SubsystemBase {
   private final VisionIO[] io;
   private final VisionIOInputsAutoLogged[] inputs;
   private final Alert[] disconnectedAlerts;
-  private final Supplier<Rotation2d> rotationSupplier;
+  private final Supplier<Pose2d> poseSupplier;
 
-  public Vision(VisionConsumer consumer, Supplier<Rotation2d> rotationSupplier, VisionIO... io) {
+  private static final LoggedTunableNumber minDistanceTagPoseBlend =
+      new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
+  private static final LoggedTunableNumber maxDistanceTagPoseBlend =
+      new LoggedTunableNumber("RobotState/MaxDistanceTagPoseBlend", Units.inchesToMeters(36.0));
+
+  public Vision(VisionConsumer consumer, Supplier<Pose2d> poseSupplier, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
-    this.rotationSupplier = rotationSupplier;
+    this.poseSupplier = poseSupplier;
 
     // Initialize inputs
     this.inputs = new VisionIOInputsAutoLogged[io.length];
@@ -189,7 +197,8 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
     // Log single tag pose
-    Logger.recordOutput("Vision/Single Tag Pose", getSingleTagPose(0));
+    Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
+    Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
   }
 
   @FunctionalInterface
@@ -229,8 +238,9 @@ public class Vision extends SubsystemBase {
             .toTranslation2d();
 
     Rotation2d camToTagRotation =
-        rotationSupplier
+        poseSupplier
             .get()
+            .getRotation()
             .plus(
                 Rotation2d.fromRadians(cameraPose.getRotation().getZ())
                     .plus(camToTagTranslation.getAngle()));
@@ -249,16 +259,42 @@ public class Vision extends SubsystemBase {
     Pose2d robotPose =
         new Pose2d(
                 fieldToCameraTranslation,
-                rotationSupplier
+                poseSupplier
                     .get()
+                    .getRotation()
                     .plus(Rotation2d.fromRadians(cameraPose.getRotation().getZ())))
             .transformBy(
                 new Transform2d(
                     new Pose3d(cameraPose.getTranslation(), cameraPose.getRotation()).toPose2d(),
                     Pose2d.kZero));
 
-    robotPose = new Pose2d(robotPose.getTranslation(), rotationSupplier.get());
+    robotPose = new Pose2d(robotPose.getTranslation(), poseSupplier.get().getRotation());
 
     return robotPose;
+  }
+
+  /**
+   * Calculates a blended pose between the robot's estimated pose and a single tag based pose.
+   *
+   * @param camIndex The index of the camera to get the tag pose from
+   * @param finalPose The final destination pose used to calculate blending factor
+   * @return A blended Pose2d between estimated and tag-based poses based on distance to final pose:
+   *     - Returns estimated pose if no tag is visible - Interpolates between tag pose and estimated
+   *     pose based on distance: - More weight on tag pose when closer to minDistanceTagPoseBlend -
+   *     More weight on estimated pose when closer to maxDistanceTagPoseBlend
+   */
+  public Pose2d getReefPose(int camIndex, Pose2d finalPose) {
+    var tagPose = getSingleTagPose(camIndex);
+    // Use estimated pose if tag pose is not present
+    if (tagPose.equals(new Pose2d())) return poseSupplier.get();
+    // Use distance from estimated pose to final pose to get t value
+    final double t =
+        MathUtil.clamp(
+            (poseSupplier.get().getTranslation().getDistance(finalPose.getTranslation())
+                    - minDistanceTagPoseBlend.get())
+                / (maxDistanceTagPoseBlend.get() - minDistanceTagPoseBlend.get()),
+            0.0,
+            1.0);
+    return poseSupplier.get().interpolate(tagPose, 1.0 - t);
   }
 }

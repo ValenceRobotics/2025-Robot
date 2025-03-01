@@ -38,6 +38,7 @@ public class DriveConstants {
   public static final double trackWidth = Units.inchesToMeters(28);
   public static final double wheelBase = Units.inchesToMeters(28);
   public static final double driveBaseRadius = Math.hypot(trackWidth / 2.0, wheelBase / 2.0);
+  public static final double maxAngularSpeed = maxSpeedMetersPerSec / driveBaseRadius;
   public static final Translation2d[] moduleTranslations =
       new Translation2d[] {
         new Translation2d(trackWidth / 2.0, wheelBase / 2.0),
@@ -111,8 +112,8 @@ public class DriveConstants {
   public static final double turnPIDMaxInput = 2 * Math.PI; // Radians
 
   // PathPlanner configuration
-  public static final double robotMassKg = 50;
-  public static final double robotMOI = 6.883;
+  public static final double robotMassKg = 52.161;
+  public static final double robotMOI = 5.777;
   public static final double wheelCOF = 1.5;
   public static final RobotConfig ppConfig =
       new RobotConfig(
@@ -204,7 +205,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     C(
         aprilTagLayout
@@ -224,7 +225,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     E(
         aprilTagLayout
@@ -244,7 +245,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     G(
         aprilTagLayout
@@ -264,7 +265,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     I(
         aprilTagLayout
@@ -284,7 +285,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI)))),
     K(
         aprilTagLayout
@@ -304,7 +305,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + 0,
                     new Rotation2d(Math.PI))));
 
     private final Pose2d pose;
@@ -480,6 +481,31 @@ public class DriveConstants {
         for (CoralScoreLocation location : values()) {
           location.pose = RedCoralScoreLocation.valueOf(location.name()).getPose();
         }
+      }
+    }
+
+    public Pose2d getPose() {
+      return pose;
+    }
+  }
+
+  public enum HPTags {
+    LEFT_STATION(null),
+    RIGHT_STATION(null);
+
+    private Pose2d pose;
+
+    HPTags(Pose2d pose) {
+      this.pose = pose;
+    }
+
+    public static void initializeAlliance(BooleanSupplier isBlue) {
+      if (isBlue.getAsBoolean()) {
+        LEFT_STATION.pose = aprilTagLayout.getTagPose(13).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagLayout.getTagPose(12).get().toPose2d();
+      } else {
+        LEFT_STATION.pose = aprilTagLayout.getTagPose(1).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagLayout.getTagPose(2).get().toPose2d();
       }
     }
 
