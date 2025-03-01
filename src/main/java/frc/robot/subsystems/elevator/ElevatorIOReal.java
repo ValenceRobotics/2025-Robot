@@ -84,18 +84,21 @@ public class ElevatorIOReal implements ElevatorIO {
     switch (RobotState.getCurrentElevatorState()) {
       case Home:
         seekPosition(0);
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01 && getLimitSwitchState()) {
+          setVoltage(0);
+        }
         break;
       case L1:
-        seekPosition(5.5);
+        seekPosition(4);
         break;
       case L2:
-        seekPosition(8.8);
+        seekPosition(8.6);
         break;
       case L3:
-        seekPosition(18);
+        seekPosition(17.5);
         break;
       case L4:
-        seekPosition(32);
+        seekPosition(30);
         break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));

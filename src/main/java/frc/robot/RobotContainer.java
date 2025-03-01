@@ -210,10 +210,12 @@ public class RobotContainer {
         .rightBumper()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> drive.getClosestHPTagPose().getRotation()));
+                    drive,
+                    () -> -controller.getLeftY(),
+                    () -> -controller.getLeftX(),
+                    () -> drive.getClosestHPTagPose().getRotation())
+                .alongWith(StateCommands.setMechanismState(EndEffectorState.Intake)))
+        .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -285,6 +287,11 @@ public class RobotContainer {
         .onFalse(
             Commands.runOnce(
                 () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
+
+    controller
+        .button(7)
+        .whileTrue(StateCommands.setMechanismState(EndEffectorState.Reverse))
+        .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
   }
 
   /**

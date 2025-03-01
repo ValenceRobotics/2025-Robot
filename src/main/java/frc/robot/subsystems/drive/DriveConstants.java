@@ -47,7 +47,7 @@ public class DriveConstants {
         new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0)
       };
 
-  public static final double bumperThickness = Units.inchesToMeters(6);
+  public static final double bumperThickness = Units.inchesToMeters(4);
   public static final double endEffectorOffset = Units.inchesToMeters(2);
 
   // Zeroed rotation values for each module, see setup instructions

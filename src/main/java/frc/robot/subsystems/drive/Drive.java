@@ -65,6 +65,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
+  // private final SwerveSetpointGenerator setpointGenerator;
+  // private SwerveSetpoint previousSetpoint;
+
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
   private Rotation2d rawGyroRotation = new Rotation2d();
   private final SwerveModulePosition[] lastModulePositions = // For delta tracking
@@ -124,6 +127,15 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         (targetPose) -> {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
+
+    // setpointGenerator = new SwerveSetpointGenerator(
+    //       ppConfig, // The robot configuration. This is the same config used for generating
+    // trajectories and running path following commands.
+    //       Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in
+    // radians per second. This should probably be stored in your Constants file
+    //   );
+    // previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
+    // DriveFeedforwards.zeros(4));
 
     // Configure SysId
     sysId =

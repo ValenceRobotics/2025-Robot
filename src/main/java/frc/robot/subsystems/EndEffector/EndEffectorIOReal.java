@@ -65,18 +65,18 @@ public class EndEffectorIOReal implements EndEffectorIO {
         break;
       case Score:
         if (RobotState.getCurrentElevatorState() == ElevatorState.L1) {
-          leftMotor.setVoltage(2);
-          rightMotor.setVoltage(-0.2);
+          leftMotor.setVoltage(2.5);
+          rightMotor.setVoltage(-0.5);
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
             || RobotState.getCurrentElevatorState() == ElevatorState.L3) {
-          setVoltage(6.5);
+          setVoltage(3);
         } else {
           setVoltage(3);
         }
         break;
       case Reverse:
-        setVoltage(-3.0);
+        setVoltage(-1.0);
         break;
       case Stopped:
         stop();
