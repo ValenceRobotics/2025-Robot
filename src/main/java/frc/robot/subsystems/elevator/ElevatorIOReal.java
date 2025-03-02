@@ -15,6 +15,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import org.littletonrobotics.junction.Logger;
 
@@ -24,6 +25,7 @@ public class ElevatorIOReal implements ElevatorIO {
   private SparkMax elevatorSlave = new SparkMax(ElevatorConstants.motorId2, MotorType.kBrushless);
   private SparkClosedLoopController elevatorController;
   private DigitalInput revLimitSwitch = new DigitalInput(9);
+  private boolean atSetpoint = false;
 
   public ElevatorIOReal() {
 
@@ -87,24 +89,69 @@ public class ElevatorIOReal implements ElevatorIO {
         if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01 && getLimitSwitchState()) {
           setVoltage(0);
         }
+
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
+            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 0) <= 0.8)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case L1:
         seekPosition(4);
+
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
+            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 4) <= 0.8)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case L2:
         seekPosition(8.6);
+
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
+            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 8.6) <= 0.8)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
+
         break;
       case L3:
         seekPosition(17.5);
+
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
+            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 17.5) <= 0.8)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
+
         break;
       case L4:
         seekPosition(30);
+
+        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
+            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 30) <= 0.8)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
+
         break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));
     }
 
+    if (atSetpoint == true) {
+      RobotState.setElevatorSetpoint(ElevatorSetpoint.AtSetpoint);
+    } else {
+      RobotState.setElevatorSetpoint(ElevatorSetpoint.NotAtSetpoint);
+    }
     Logger.recordOutput("Elevator/Limit Switch", getLimitSwitchState());
+    Logger.recordOutput("Elevator/At Setpoint", atSetpoint());
+
     inputs.appliedVolts = elevatorMaster.getBusVoltage();
     inputs.motorRotations = elevatorMaster.getEncoder().getPosition();
     inputs.velocityRotationsPerSec = elevatorMaster.getEncoder().getVelocity();
@@ -114,6 +161,10 @@ public class ElevatorIOReal implements ElevatorIO {
 
   public boolean getLimitSwitchState() {
     return revLimitSwitch.get();
+  }
+
+  public boolean atSetpoint() {
+    return atSetpoint;
   }
 
   @Override

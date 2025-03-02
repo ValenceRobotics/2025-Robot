@@ -15,10 +15,15 @@ public class RobotState {
     testing
   }
 
+  public enum ElevatorSetpoint {
+    AtSetpoint,
+    NotAtSetpoint
+  }
+
   public enum DriveState {
     Driving,
     Aligning,
-    CloseToAlign
+    Aligned
   }
 
   public enum CoralState {
@@ -40,10 +45,21 @@ public class RobotState {
   private DriveState driveState = DriveState.Driving;
   private CoralState coralState = CoralState.HasCoral; // set no coral later
   private EndEffectorState endEffectorState = EndEffectorState.Stopped;
+  private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
 
   // Singleton accessor
   public static RobotState getInstance() {
     return instance;
+  }
+
+  public static void setElevatorSetpoint(ElevatorSetpoint state) {
+    instance.elevatorSetpointState = state;
+
+    Logger.recordOutput("RobotState/ElevatorSetpointState", state.toString());
+  }
+
+  public static ElevatorSetpoint getElevatorSetpoint() {
+    return instance.elevatorSetpointState;
   }
 
   // Elevator state management

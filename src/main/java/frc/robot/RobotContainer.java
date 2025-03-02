@@ -147,6 +147,22 @@ public class RobotContainer {
     }
     // named commands declaration
     NamedCommands.registerCommand(
+        "autoAlignLeft",
+        DriveCommands.alignToReef(
+                drive,
+                () -> drive.getScoreLocations()[0],
+                () -> vision.getReefPose(0, drive.getScoreLocations()[0]))
+            .until(() -> RobotState.getDriveState() == DriveState.Aligned)
+            .withTimeout(3));
+    NamedCommands.registerCommand(
+        "autoAlignRight",
+        DriveCommands.alignToReef(
+                drive,
+                () -> drive.getScoreLocations()[1],
+                () -> vision.getReefPose(1, drive.getScoreLocations()[1]))
+            .until(() -> RobotState.getDriveState() == DriveState.Aligned)
+            .withTimeout(3));
+    NamedCommands.registerCommand(
         "autoScore1",
         (StateCommands.setMechanismState(ElevatorState.L1))
             .andThen(new WaitCommand(1))

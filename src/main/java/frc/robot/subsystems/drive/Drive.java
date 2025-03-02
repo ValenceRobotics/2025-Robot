@@ -48,6 +48,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
+import frc.robot.RobotState;
+import frc.robot.RobotState.DriveState;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
 import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
@@ -222,6 +224,15 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
+
+    if ((Math.abs(getPose().getX() - getScoreLocations()[0].getX()) <= 0.01)
+            && ((Math.abs(getPose().getY() - getScoreLocations()[0].getY()) <= 0.01))
+        || (Math.abs(getPose().getX() - getScoreLocations()[1].getX()) <= 0.01)
+            && ((Math.abs(getPose().getY() - getScoreLocations()[1].getY()) <= 0.01))) {
+      RobotState.setDriveState(DriveState.Aligned);
+    } else {
+      RobotState.setDriveState(DriveState.Driving);
+    }
   }
 
   public Pose2d getClosestHPTagPose() {

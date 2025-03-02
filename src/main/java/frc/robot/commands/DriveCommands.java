@@ -28,11 +28,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotState;
-import frc.robot.RobotState.DriveState;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.FieldConstants.Reef;
 import frc.robot.util.GeomUtil;
 import frc.robot.util.LoggedTunableNumber;
@@ -324,63 +321,64 @@ public class DriveCommands {
    */
 
   // NOTE: Old version
-  public static Command alignToPose(
-      Drive drive,
-      Vision vision,
-      Supplier<Pose2d> targetPoseSupplier,
-      boolean useSingleTagPose,
-      int camIndex) {
-    ProfiledPIDController xController =
-        new ProfiledPIDController(
-            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
+  // public static Command alignToPose(
+  //     Drive drive,
+  //     Vision vision,
+  //     Supplier<Pose2d> targetPoseSupplier,
+  //     boolean useSingleTagPose,
+  //     int camIndex) {
+  //   ProfiledPIDController xController =
+  //       new ProfiledPIDController(
+  //           TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
 
-    ProfiledPIDController yController =
-        new ProfiledPIDController(
-            TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
+  //   ProfiledPIDController yController =
+  //       new ProfiledPIDController(
+  //           TRANSLATION_KP, 0.0, TRANSLATION_KD, new TrapezoidProfile.Constraints(0.25, 0.25));
 
-    ProfiledPIDController angleController =
-        new ProfiledPIDController(3, 0.0, 0.0, new TrapezoidProfile.Constraints(4, 10));
-    angleController.enableContinuousInput(-Math.PI, Math.PI);
+  //   ProfiledPIDController angleController =
+  //       new ProfiledPIDController(3, 0.0, 0.0, new TrapezoidProfile.Constraints(4, 10));
+  //   angleController.enableContinuousInput(-Math.PI, Math.PI);
 
-    return Commands.run(
-        () -> {
-          // Calculate error
-          Pose2d targetPose = targetPoseSupplier.get();
-          Pose2d currentPose = drive.getPose();
-          Logger.recordOutput("Alignment/UsingSingleTag", "false");
-          if (useSingleTagPose
-              && vision.getSingleTagPose(camIndex) != new Pose2d()
-              && targetPose.minus(currentPose).getTranslation().getNorm()
-                  < 0.5) { // tune target distance condition
-            currentPose = vision.getSingleTagPose(0);
-            Logger.recordOutput("Alignment/UsingSingleTag", "true");
-          }
+  //   return Commands.run(
+  //       () -> {
+  //         // Calculate error
+  //         Pose2d targetPose = targetPoseSupplier.get();
+  //         Pose2d currentPose = drive.getPose();
+  //         Logger.recordOutput("Alignment/UsingSingleTag", "false");
+  //         if (useSingleTagPose
+  //             && vision.getSingleTagPose(camIndex) != new Pose2d()
+  //             && targetPose.minus(currentPose).getTranslation().getNorm()
+  //                 < 0.5) { // tune target distance condition
+  //           currentPose = vision.getSingleTagPose(0);
+  //           Logger.recordOutput("Alignment/UsingSingleTag", "true");
+  //         }
 
-          if (targetPose.minus(currentPose).getTranslation().getNorm() < 0.2) {
-            RobotState.setDriveState(DriveState.CloseToAlign);
-          }
+  //         if (targetPose.minus(currentPose).getTranslation().getNorm() < 0.2) {
+  //           RobotState.setDriveState(DriveState.CloseToAlign);
+  //         }
 
-          Logger.recordOutput("Alignment/Current Pose", currentPose);
+  //         Logger.recordOutput("Alignment/Current Pose", currentPose);
 
-          double xError = targetPose.getX() - currentPose.getX();
-          double yError = targetPose.getY() - currentPose.getY();
-          double angleError =
-              targetPose.getRotation().minus(currentPose.getRotation()).getRadians();
+  //         double xError = targetPose.getX() - currentPose.getX();
+  //         double yError = targetPose.getY() - currentPose.getY();
+  //         double angleError =
+  //             targetPose.getRotation().minus(currentPose.getRotation()).getRadians();
 
-          double xOutput = MathUtil.clamp(xController.calculate(xError, 0), -1.0, 1.0);
-          double yOutput = MathUtil.clamp(yController.calculate(yError, 0), -1.0, 1.0);
-          double angleOutput = MathUtil.clamp(angleController.calculate(angleError, 0), -1.0, 1.0);
+  //         double xOutput = MathUtil.clamp(xController.calculate(xError, 0), -1.0, 1.0);
+  //         double yOutput = MathUtil.clamp(yController.calculate(yError, 0), -1.0, 1.0);
+  //         double angleOutput = MathUtil.clamp(angleController.calculate(angleError, 0), -1.0,
+  // 1.0);
 
-          double flipAlliance =
-              DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? -1 : 1;
-          DoubleSupplier xSupplier = () -> flipAlliance * xOutput;
-          DoubleSupplier ySupplier = () -> flipAlliance * yOutput;
-          DoubleSupplier omegaSupplier = () -> -angleOutput;
+  //         double flipAlliance =
+  //             DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue ? -1 : 1;
+  //         DoubleSupplier xSupplier = () -> flipAlliance * xOutput;
+  //         DoubleSupplier ySupplier = () -> flipAlliance * yOutput;
+  //         DoubleSupplier omegaSupplier = () -> -angleOutput;
 
-          joystickDrive(drive, xSupplier, ySupplier, omegaSupplier).execute();
-        },
-        drive);
-  }
+  //         joystickDrive(drive, xSupplier, ySupplier, omegaSupplier).execute();
+  //       },
+  //       drive);
+  // }
 
   public static Command alignToReef(Drive drive, Supplier<Pose2d> target, Supplier<Pose2d> robot) {
     return new DriveToPose(drive, () -> getDriveTarget(robot.get(), target.get()), robot);
