@@ -33,7 +33,7 @@ import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 
 public class DriveConstants {
-  public static final double maxSpeedMetersPerSec = 5.02;
+  public static final double maxSpeedMetersPerSec = 5.33;
   public static final double odometryFrequency = 100.0; // Hz
   public static final double trackWidth = Units.inchesToMeters(28);
   public static final double wheelBase = Units.inchesToMeters(28);
@@ -147,7 +147,7 @@ public class DriveConstants {
                   wheelCOF));
 
   public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded); // andymark on real field
 
   public enum ReefTags {
     SIDE_AB(null),

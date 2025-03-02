@@ -20,7 +20,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import com.pathplanner.lib.util.swerve.SwerveSetpoint;
+import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -35,6 +38,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -65,8 +69,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  // private final SwerveSetpointGenerator setpointGenerator;
-  // private SwerveSetpoint previousSetpoint;
+  private final SwerveSetpointGenerator setpointGenerator;
+  private SwerveSetpoint previousSetpoint;
 
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
   private Rotation2d rawGyroRotation = new Rotation2d();
@@ -128,14 +132,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    // setpointGenerator = new SwerveSetpointGenerator(
-    //       ppConfig, // The robot configuration. This is the same config used for generating
-    // trajectories and running path following commands.
-    //       Units.rotationsToRadians(10.0) // The max rotation velocity of a swerve module in
-    // radians per second. This should probably be stored in your Constants file
-    //   );
-    // previousSetpoint = new SwerveSetpoint(getChassisSpeeds(), getModuleStates(),
-    // DriveFeedforwards.zeros(4));
+    setpointGenerator = new SwerveSetpointGenerator(ppConfig, Units.rotationsToRadians(10.0));
+    previousSetpoint =
+        new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
 
     // Configure SysId
     sysId =
@@ -308,8 +307,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     SwerveModuleState[] setpointStates = kinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(setpointStates, maxSpeedMetersPerSec);
 
+    // previousSetpoint = setpointGenerator.generateSetpoint(previousSetpoint, speeds, 0.02);
+    // SwerveModuleState[] setpointStates = previousSetpoint.moduleStates();
+
     // Log unoptimized setpoints
-    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
+    Logger.recordOutput("Swe\rveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
     // Send setpoints to modules
