@@ -13,12 +13,6 @@
         {
           "type": "named",
           "data": {
-            "name": "autoAlignLeft"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "autoScore4"
           }
         },
@@ -38,12 +32,6 @@
           "type": "path",
           "data": {
             "pathName": "HP to K"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlignLeft"
           }
         },
         {
@@ -73,12 +61,6 @@
         {
           "type": "named",
           "data": {
-            "name": "autoAlignRight"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "autoScore4"
           }
         },
@@ -98,12 +80,6 @@
           "type": "path",
           "data": {
             "pathName": "HP to A "
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlignLeft"
           }
         },
         {
