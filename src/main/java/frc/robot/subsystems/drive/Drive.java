@@ -322,7 +322,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // SwerveModuleState[] setpointStates = previousSetpoint.moduleStates();
 
     // Log unoptimized setpoints
-    Logger.recordOutput("Swe\rveStates/Setpoints", setpointStates);
+    Logger.recordOutput("SwerveStates/Setpoints", setpointStates);
     Logger.recordOutput("SwerveChassisSpeeds/Setpoints", speeds);
 
     // Send setpoints to modules

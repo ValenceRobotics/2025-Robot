@@ -23,6 +23,7 @@ public class RobotState {
   public enum DriveState {
     Driving,
     Aligning,
+    CloseToAlign,
     Aligned
   }
 
