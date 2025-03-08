@@ -170,7 +170,7 @@ public class RobotContainer {
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .withTimeout(1));
+            .andThen(new WaitCommand(1)));
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4))
@@ -179,12 +179,12 @@ public class RobotContainer {
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .withTimeout(4));
+            .andThen(new WaitCommand(1)));
     NamedCommands.registerCommand(
         "getCoralHp",
-        (StateCommands.setMechanismState(EndEffectorState.Intake))
-            .andThen(new WaitCommand(1))
-            .withTimeout(3));
+        (StateCommands.setMechanismState(EndEffectorState.Intake)
+                .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
+            .andThen(new WaitCommand(1.5)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
@@ -230,11 +230,15 @@ public class RobotContainer {
                     () -> -controller.getLeftY(),
                     () -> -controller.getLeftX(),
                     () -> drive.getClosestHPTagPose().getRotation())
-                .alongWith(StateCommands.setMechanismState(EndEffectorState.Intake)))
-        .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
+                .alongWith(
+                    StateCommands.setMechanismState(EndEffectorState.Intake)
+                        .alongWith(StateCommands.setMechanismState(ElevatorState.Intake))))
+        .onFalse(
+            StateCommands.setMechanismState(EndEffectorState.Stopped)
+                .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
     // Reset gyro / odometry
     final Runnable resetGyro =
@@ -254,7 +258,7 @@ public class RobotContainer {
     controller.b().onTrue(StateCommands.setMechanismState(ElevatorState.L2));
     controller.x().onTrue(StateCommands.setMechanismState(ElevatorState.L3));
     controller.y().onTrue(StateCommands.setMechanismState(ElevatorState.L4));
-    controller.povUp().onTrue(StateCommands.setMechanismState(ElevatorState.testing));
+    // controller.povUp().onTrue(StateCommands.setMechanismState(ElevatorState.testing));
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
 
@@ -270,9 +274,6 @@ public class RobotContainer {
                 drive,
                 () -> drive.getScoreLocations()[0],
                 () -> vision.getReefPose(0, drive.getScoreLocations()[0])))
-
-        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[0], false, 0))
-        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
@@ -282,9 +283,6 @@ public class RobotContainer {
                 drive,
                 () -> drive.getScoreLocations()[1],
                 () -> vision.getReefPose(1, drive.getScoreLocations()[1])))
-
-        // DriveCommands.alignToPose(drive, vision, () -> drive.getScoreLocations()[1], false, 1))
-        // old method
         .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
@@ -299,10 +297,12 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(
             Commands.runOnce(
-                () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector))
+                    () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector)
+                .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
         .onFalse(
             Commands.runOnce(
-                () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector));
+                    () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector)
+                .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
     controller
         .button(7)

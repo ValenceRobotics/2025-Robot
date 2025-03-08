@@ -8,10 +8,12 @@ public class RobotState {
   // State enums
   public enum ElevatorState {
     Home,
+    Intake,
     L1,
     L2,
     L3,
     L4,
+    L4Score,
     testing
   }
 
@@ -77,6 +79,10 @@ public class RobotState {
   }
 
   public static void updateElevatorState() {
+    if (instance.currentElevatorState == ElevatorState.Intake
+        && instance.coralState == CoralState.HasCoral) {
+      setQueuedElevatorState(ElevatorState.Home);
+    }
     if (canExecuteQueuedState()) {
       instance.currentElevatorState = instance.queuedElevatorState;
       Logger.recordOutput(

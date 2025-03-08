@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOReal implements ElevatorIO {
@@ -26,6 +27,13 @@ public class ElevatorIOReal implements ElevatorIO {
   private SparkClosedLoopController elevatorController;
   private DigitalInput revLimitSwitch = new DigitalInput(9);
   private boolean atSetpoint = false;
+
+  private LoggedTunableNumber l4Position = new LoggedTunableNumber("Elevator/L4Position", 31.8);
+  private LoggedTunableNumber l4ScorePosition =
+      new LoggedTunableNumber("Elevator/L4ScorePosition", 32.5);
+  private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 6);
+  private LoggedTunableNumber l2Position = new LoggedTunableNumber("Elevator/L2Position", 10);
+  private LoggedTunableNumber l3Position = new LoggedTunableNumber("Elevator/L3Position", 18.3);
 
   public ElevatorIOReal() {
 
@@ -89,59 +97,28 @@ public class ElevatorIOReal implements ElevatorIO {
         if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01 && getLimitSwitchState()) {
           setVoltage(0);
         }
-
-        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
-            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 0) <= 0.8)) {
-          atSetpoint = true;
-        } else {
-          atSetpoint = false;
-        }
+        break;
+      case Intake:
+        seekPosition(0.5);
         break;
       case L1:
-        seekPosition(4);
-
-        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
-            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 4) <= 0.8)) {
-          atSetpoint = true;
-        } else {
-          atSetpoint = false;
-        }
+        seekPosition(l1Position.get());
         break;
       case L2:
-        seekPosition(8.6);
-
-        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
-            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 8.6) <= 0.8)) {
-          atSetpoint = true;
-        } else {
-          atSetpoint = false;
-        }
-
+        seekPosition(l2Position.get());
         break;
       case L3:
-        seekPosition(17.5);
-
-        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
-            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 17.5) <= 0.8)) {
-          atSetpoint = true;
-        } else {
-          atSetpoint = false;
-        }
-
+        seekPosition(l3Position.get());
         break;
       case L4:
-        seekPosition(30);
-
-        if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01
-            && (Math.abs(elevatorMaster.getEncoder().getPosition() - 30) <= 0.8)) {
-          atSetpoint = true;
-        } else {
-          atSetpoint = false;
-        }
-
+        seekPosition(l4Position.get());
+        break;
+      case L4Score:
+        seekPosition(l4ScorePosition.get());
         break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));
+        break;
     }
 
     if (atSetpoint == true) {

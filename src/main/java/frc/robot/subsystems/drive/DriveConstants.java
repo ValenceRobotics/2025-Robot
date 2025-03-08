@@ -17,6 +17,7 @@ import static edu.wpi.first.units.Units.*;
 
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.RobotConfig;
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,6 +27,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import org.ironmaple.simulation.drivesims.COTS;
@@ -71,16 +73,19 @@ public class DriveConstants {
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 60;
-  public static final double wheelRadiusMeters = Units.inchesToMeters(1.689);
+  public static final double wheelRadiusMeters = Units.inchesToMeters(1.6607); // old 1.689
   public static final double driveMotorReduction =
-      (45.0 * 22.0) / (13.0 * 15.0); // MAXSwerve with 13 pinion teeth and 22 spur teeth
+      (45.0 * 22.0) / (13.0 * 15.0); // MAXSwerve with 13 pinion teeth
+  // and 22 spur teeth
   public static final DCMotor driveGearbox = DCMotor.getNeoVortex(1);
 
   // Drive encoder configuration
   public static final double driveEncoderPositionFactor =
-      2 * Math.PI / driveMotorReduction; // Rotor Rotations -> Wheel Radians
+      2 * Math.PI / driveMotorReduction; // Rotor Rotations ->
+  // Wheel Radians
   public static final double driveEncoderVelocityFactor =
-      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
+      (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM ->
+  // Wheel Rad/Sec
 
   // Drive PID configuration
   public static final double driveKp = 0.0;
@@ -146,8 +151,28 @@ public class DriveConstants {
                   KilogramSquareMeters.of(0.02),
                   wheelCOF));
 
-  public static AprilTagFieldLayout aprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded); // andymark on real field
+  public static AprilTagFieldLayout aprilTagFullLayout =
+      AprilTagFieldLayout.loadField(
+          AprilTagFields.k2025ReefscapeAndyMark); // andymark on real field
+
+  private static final List<AprilTag> kReefTags =
+      List.of(
+          aprilTagFullLayout.getTags().get(5),
+          aprilTagFullLayout.getTags().get(6),
+          aprilTagFullLayout.getTags().get(7),
+          aprilTagFullLayout.getTags().get(8),
+          aprilTagFullLayout.getTags().get(9),
+          aprilTagFullLayout.getTags().get(10),
+          aprilTagFullLayout.getTags().get(16),
+          aprilTagFullLayout.getTags().get(17),
+          aprilTagFullLayout.getTags().get(18),
+          aprilTagFullLayout.getTags().get(19),
+          aprilTagFullLayout.getTags().get(20),
+          aprilTagFullLayout.getTags().get(21));
+
+  public static final AprilTagFieldLayout aprilTagLayout =
+      new AprilTagFieldLayout(
+          kReefTags, aprilTagFullLayout.getFieldLength(), aprilTagFullLayout.getFieldWidth());
 
   public enum ReefTags {
     SIDE_AB(null),
@@ -501,11 +526,11 @@ public class DriveConstants {
 
     public static void initializeAlliance(BooleanSupplier isBlue) {
       if (isBlue.getAsBoolean()) {
-        LEFT_STATION.pose = aprilTagLayout.getTagPose(13).get().toPose2d();
-        RIGHT_STATION.pose = aprilTagLayout.getTagPose(12).get().toPose2d();
+        LEFT_STATION.pose = aprilTagFullLayout.getTagPose(13).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagFullLayout.getTagPose(12).get().toPose2d();
       } else {
-        LEFT_STATION.pose = aprilTagLayout.getTagPose(1).get().toPose2d();
-        RIGHT_STATION.pose = aprilTagLayout.getTagPose(2).get().toPose2d();
+        LEFT_STATION.pose = aprilTagFullLayout.getTagPose(1).get().toPose2d();
+        RIGHT_STATION.pose = aprilTagFullLayout.getTagPose(2).get().toPose2d();
       }
     }
 

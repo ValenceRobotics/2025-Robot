@@ -13,6 +13,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class EndEffectorIOReal implements EndEffectorIO {
@@ -20,6 +21,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   SparkMax leftMotor = new SparkMax(EndEffectorConstants.leftMotorId, MotorType.kBrushless);
   SparkMax rightMotor = new SparkMax(EndEffectorConstants.rightMotorId, MotorType.kBrushless);
   Canandcolor canandcolor = new Canandcolor(13);
+
+  private LoggedTunableNumber l4ScoreSpeed = new LoggedTunableNumber("EndEffector/L4Score", 3);
 
   public EndEffectorIOReal() {
     var endEffectorConfig = new SparkMaxConfig();
@@ -65,18 +68,21 @@ public class EndEffectorIOReal implements EndEffectorIO {
         break;
       case Score:
         if (RobotState.getCurrentElevatorState() == ElevatorState.L1) {
-          leftMotor.setVoltage(2.5);
+          leftMotor.setVoltage(3);
           rightMotor.setVoltage(-0.5);
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
-            || RobotState.getCurrentElevatorState() == ElevatorState.L3) {
+            || RobotState.getCurrentElevatorState() == ElevatorState.L3
+            || RobotState.getCurrentElevatorState() == ElevatorState.Home) {
           setVoltage(3);
         } else {
-          setVoltage(3);
+          setVoltage(l4ScoreSpeed.get());
+          // new WaitCommand(0.1);
+          RobotState.setQueuedElevatorState(ElevatorState.L4Score);
         }
         break;
       case Reverse:
-        setVoltage(-1.0);
+        setVoltage(-1.5);
         break;
       case Stopped:
         stop();

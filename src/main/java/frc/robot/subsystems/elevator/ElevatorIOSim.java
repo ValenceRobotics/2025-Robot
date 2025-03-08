@@ -2,7 +2,6 @@ package frc.robot.subsystems.elevator;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Second;
 
 import com.revrobotics.sim.SparkMaxSim;
@@ -22,6 +21,7 @@ import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.RobotState;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.util.ElevatorMath;
+import frc.robot.util.LoggedTunableNumber;
 import org.littletonrobotics.junction.Logger;
 
 public class ElevatorIOSim implements ElevatorIO {
@@ -40,6 +40,13 @@ public class ElevatorIOSim implements ElevatorIO {
   private SparkMax max = new SparkMax(0, MotorType.kBrushless);
   private SparkMaxSim maxSim;
   private SparkClosedLoopController elevatorController;
+
+  private LoggedTunableNumber l4Position = new LoggedTunableNumber("Elevator/L4Position", 31.8);
+  private LoggedTunableNumber l4ScorePosition =
+      new LoggedTunableNumber("Elevator/L4Position", 32.5);
+  private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 5.1);
+  private LoggedTunableNumber l2Position = new LoggedTunableNumber("Elevator/L2Position", 9.3);
+  private LoggedTunableNumber l3Position = new LoggedTunableNumber("Elevator/L3Position", 18.3);
 
   public ElevatorIOSim() {
 
@@ -69,19 +76,28 @@ public class ElevatorIOSim implements ElevatorIO {
   public void updateInputs(ElevatorIOInputs inputs) {
 
     RobotState.updateElevatorState();
-
+    // tune setpoints on proper field
     switch (RobotState.getCurrentElevatorState()) {
       case Home:
         seekPosition(0);
         break;
+      case Intake:
+        seekPosition(0.5);
+        break;
+      case L1:
+        seekPosition(l1Position.get());
+        break;
       case L2:
-        seekPosition(0.2286);
+        seekPosition(l2Position.get());
         break;
       case L3:
-        seekPosition(0.6096);
+        seekPosition(l3Position.get());
         break;
       case L4:
-        seekPosition(1.3);
+        seekPosition(l4Position.get());
+        break;
+      case L4Score:
+        seekPosition(l4ScorePosition.get());
         break;
     }
 
@@ -120,14 +136,8 @@ public class ElevatorIOSim implements ElevatorIO {
   @Override
   public void seekPosition(double position) {
     double ff = ElevatorConstants.kGSim + ElevatorConstants.kVSim * (maxSim.getVelocity() / 60);
-    elevatorController.setReference(
-        ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations),
-        ControlType.kPosition,
-        ClosedLoopSlot.kSlot0,
-        ff);
-    Logger.recordOutput(
-        "Elevator/Setpoint",
-        ElevatorMath.convertDistanceToRotations(Meters.of(position)).in(Rotations));
+    elevatorController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
+    Logger.recordOutput("Elevator/Setpoint", position);
   }
 
   @Override

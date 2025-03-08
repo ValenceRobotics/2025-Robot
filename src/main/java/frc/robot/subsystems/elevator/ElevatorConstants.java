@@ -27,9 +27,9 @@ public class ElevatorConstants {
   public static final double kVSim =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
-  public static LoggedTunableNumber kPReal = new LoggedTunableNumber("Elevator/kP", 0.055);
-  public static LoggedTunableNumber kDReal = new LoggedTunableNumber("Elevator/kD", 0.);
-  public static LoggedTunableNumber kGReal = new LoggedTunableNumber("Elevator/kG", 0.5);
+  public static LoggedTunableNumber kPReal = new LoggedTunableNumber("Elevator/kP", 0.065);
+  public static LoggedTunableNumber kDReal = new LoggedTunableNumber("Elevator/kD", 0.001);
+  public static LoggedTunableNumber kGReal = new LoggedTunableNumber("Elevator/kG", 0.4);
   public static final double kVReal =
       9.21 / ElevatorMath.convertDistanceToRotations(Meters.of(1)).in(Rotations);
 
