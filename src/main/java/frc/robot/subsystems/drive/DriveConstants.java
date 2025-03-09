@@ -50,7 +50,8 @@ public class DriveConstants {
       };
 
   public static final double bumperThickness = Units.inchesToMeters(4);
-  public static final double endEffectorOffset = Units.inchesToMeters(2);
+
+  public static final double endEffectorOffset = Units.inchesToMeters(0);
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
@@ -73,7 +74,7 @@ public class DriveConstants {
 
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 60;
-  public static final double wheelRadiusMeters = Units.inchesToMeters(1.6607); // old 1.689
+  public static final double wheelRadiusMeters = Units.inchesToMeters(1.6467); // old 1.689
   public static final double driveMotorReduction =
       (45.0 * 22.0) / (13.0 * 15.0); // MAXSwerve with 13 pinion teeth
   // and 22 spur teeth

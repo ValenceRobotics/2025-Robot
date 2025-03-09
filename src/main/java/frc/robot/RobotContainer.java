@@ -170,16 +170,16 @@ public class RobotContainer {
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .andThen(new WaitCommand(1)));
+            .withTimeout(1));
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4))
-            .andThen(new WaitCommand(1))
+            .andThen(new WaitCommand(1.5))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .andThen(new WaitCommand(1)));
+            .withTimeout(4));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
