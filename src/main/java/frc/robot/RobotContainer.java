@@ -17,6 +17,7 @@ import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -75,10 +76,10 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOPigeon2(),
-                new ModuleIOSpark(0),
-                new ModuleIOSpark(1),
-                new ModuleIOSpark(2),
-                new ModuleIOSpark(3),
+                new ModuleIOSpark2(0, IdleMode.kBrake),
+                new ModuleIOSpark(1, IdleMode.kBrake),
+                new ModuleIOSpark(2, IdleMode.kBrake),
+                new ModuleIOSpark(3, IdleMode.kBrake),
                 (pose) -> {});
 
         this.vision =
@@ -220,7 +221,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -0.8 * controller.getRightX()));
 
     controller
         .rightBumper()
