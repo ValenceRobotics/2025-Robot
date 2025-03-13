@@ -21,17 +21,17 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -22
+          "degrees": -5
         },
         {
           "axis": "z",
-          "degrees": -50
+          "degrees": -60
         }
       ],
       "position": [
         0.303,
         0.1769,
-        0.1335
+        0.2859
       ],
       "resolution": [
         1280,
@@ -44,17 +44,17 @@
       "rotations": [
         {
           "axis": "y",
-          "degrees": -22
+          "degrees": -5
         },
         {
           "axis": "z",
-          "degrees": 50
+          "degrees": 60
         }
       ],
       "position": [
         0.303,
         -0.1762,
-        0.1524
+        0.3048
       ],
       "resolution": [
         1280,
@@ -63,21 +63,21 @@
       "fov": 70
     },
     {
-      "name": "BackCam",
+      "name": "ThirdFrontCam",
       "rotations": [
         {
           "axis": "y",
-          "degrees": -30
+          "degrees": 10
         },
         {
           "axis": "z",
-          "degrees": 180
+          "degrees": 0
         }
       ],
       "position": [
-        -0.302,
-        0,
-        0.1335
+        0.303,
+        -0.1762,
+        0.4572
       ],
       "resolution": [
         1280,

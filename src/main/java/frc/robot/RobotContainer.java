@@ -221,7 +221,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -0.8 * controller.getRightX()));
+            () -> -controller.getRightX()));
 
     controller
         .rightBumper()
@@ -270,6 +270,8 @@ public class RobotContainer {
     // reef alignment
     controller
         .povLeft()
+        .or(controller.pov(315))
+        .or(controller.pov(225))
         .whileTrue(
             DriveCommands.alignToReef(
                 drive,
@@ -279,6 +281,8 @@ public class RobotContainer {
 
     controller
         .povRight()
+        .or(controller.pov(45))
+        .or(controller.pov(135))
         .whileTrue(
             DriveCommands.alignToReef(
                 drive,

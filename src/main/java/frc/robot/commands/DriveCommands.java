@@ -55,7 +55,7 @@ public class DriveCommands {
   private static final double TRANSLATION_KD = 0.0;
 
   private static final LoggedTunableNumber maxDistanceReefLineup =
-      new LoggedTunableNumber("AutoScore/MaxDistanceReefLineup", 1);
+      new LoggedTunableNumber("AutoScore/MaxDistanceReefLineup", 1.5);
 
   private DriveCommands() {}
 

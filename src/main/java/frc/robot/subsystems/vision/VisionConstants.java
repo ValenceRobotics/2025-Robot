@@ -41,28 +41,28 @@ public class VisionConstants {
   // Camera names, must match names configured on coprocessor
   public static String camera0Name = "FrontLeftCam";
   public static String camera1Name = "FrontRightCam";
-  public static String camera2Name = "BackCam";
+  public static String camera2Name = "ThirdFrontCam";
 
   // Robot to camera transforms
   // (Not used by Limelight, configure in web UI instead)
   public static Transform3d robotToCamera0 =
       new Transform3d(
-          Units.inchesToMeters(11.854),
-          Units.inchesToMeters(7.019),
-          Units.inchesToMeters(4.565),
-          new Rotation3d(0.0, Units.degreesToRadians(-24), Units.degreesToRadians(-45)));
+          Units.inchesToMeters(11.715),
+          Units.inchesToMeters(6.516),
+          Units.inchesToMeters(9.211),
+          new Rotation3d(0.0, Units.degreesToRadians(-5), Units.degreesToRadians(-60)));
   public static Transform3d robotToCamera1 =
       new Transform3d(
-          Units.inchesToMeters(12.46),
-          Units.inchesToMeters(-6.987),
-          Units.inchesToMeters(4.565),
-          new Rotation3d(0.0, Units.degreesToRadians(-24), Units.degreesToRadians(45)));
+          Units.inchesToMeters(12.465),
+          Units.inchesToMeters(-6.610),
+          Units.inchesToMeters(9.584),
+          new Rotation3d(0.0, Units.degreesToRadians(-5), Units.degreesToRadians(60)));
   public static Transform3d robotToCamera2 =
       new Transform3d(
-          Units.inchesToMeters(-11.9),
-          Units.inchesToMeters(0),
-          Units.inchesToMeters(3.125 + 2.75),
-          new Rotation3d(0.0, Units.degreesToRadians(-30), Math.PI));
+          Units.inchesToMeters(12.380),
+          Units.inchesToMeters(-6.890),
+          Units.inchesToMeters(15.272),
+          new Rotation3d(0.0, Units.degreesToRadians(10), 0));
 
   public static Transform3d[] robotToCamera = new Transform3d[] {robotToCamera0, robotToCamera1};
 
