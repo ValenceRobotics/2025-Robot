@@ -180,7 +180,7 @@ public class RobotContainer {
             .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .withTimeout(4));
+            .withTimeout(3));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
