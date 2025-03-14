@@ -3,8 +3,7 @@ package frc.robot;
 /** Automatically generated file containing build version information. */
 public final class BuildConstants {
   public static final String MAVEN_GROUP = "";
-  public static final String MAVEN_NAME =
-      "AdvantageKit_SparkSwerveTemplate-maple-sim copy-Imported";
+  public static final String MAVEN_NAME = "2025-Robot-main";
   public static final String VERSION = "unspecified";
   public static final int GIT_REVISION = 68;
   public static final String GIT_SHA = "0b656fdb9117afe84216c3fde9d0aa5cb1d721c6";

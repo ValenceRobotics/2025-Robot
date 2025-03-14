@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "start to I"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlignLeft"
+            "pathName": "start to J"
           }
         },
         {
@@ -25,7 +19,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "I to HP"
+            "pathName": "J to HP"
           }
         },
         {
@@ -38,12 +32,6 @@
           "type": "path",
           "data": {
             "pathName": "HP to K"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlignLeft"
           }
         },
         {
@@ -68,12 +56,6 @@
           "type": "path",
           "data": {
             "pathName": "HP to L"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "autoAlignRight"
           }
         },
         {
