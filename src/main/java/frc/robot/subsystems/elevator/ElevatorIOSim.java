@@ -96,6 +96,9 @@ public class ElevatorIOSim implements ElevatorIO {
       case L4:
         seekPosition(l4Position.get());
         break;
+      case L4Force:
+        seekPosition(l4Position.get());
+        break;
       case L4Score:
         seekPosition(l4ScorePosition.get());
         break;

@@ -14,6 +14,7 @@ public class RobotState {
     L3,
     L4,
     L4Score,
+    L4Force,
     testing
   }
 
@@ -70,6 +71,8 @@ public class RobotState {
     instance.queuedElevatorState = state;
     if (state == ElevatorState.Home) {
       instance.currentElevatorState = ElevatorState.Home; // Home executes immediately
+    } else if (state == ElevatorState.L4Force) {
+      instance.currentElevatorState = ElevatorState.L4Force; // L4Force executes immediately
     }
     Logger.recordOutput("RobotState/QueuedElevatorState", state.toString());
   }
@@ -93,7 +96,7 @@ public class RobotState {
   // Drive state management
   public static void setDriveState(DriveState state) {
     // Check for transition from CloseToAlign to Driving
-    // if (instance.previousDriveState == DriveState.CloseToAlign && state == DriveState.Driving) {
+    // if (instance.previousDriveState == DriveState.Aligned && state == DriveState.Driving) {
     //   setQueuedElevatorState(ElevatorState.Home);
     // }
 
@@ -130,13 +133,11 @@ public class RobotState {
 
   // Elevator state validation
   private static boolean canExecuteQueuedState() {
-    return true;
-    //   if (instance.queuedElevatorState == ElevatorState.Home) {
-    //     return true; // Home state has no requirements
-    //   }
-    //   return instance.driveState == DriveState.CloseToAlign
-    //       && instance.coralState == CoralState.HasCoral;
-    // }
+    if (instance.queuedElevatorState == ElevatorState.Home
+        || instance.queuedElevatorState == ElevatorState.L4Force) {
+      return true; // Home state has no requirements, force override in l4 auto
+    }
+    return instance.driveState == DriveState.Aligned && instance.coralState == CoralState.HasCoral;
   }
 
   // Private constructor for singleton

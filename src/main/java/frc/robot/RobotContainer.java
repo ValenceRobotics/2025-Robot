@@ -89,7 +89,9 @@ public class RobotContainer {
                 new VisionIOPhotonVision(
                     VisionConstants.camera0Name, VisionConstants.robotToCamera0),
                 new VisionIOPhotonVision(
-                    VisionConstants.camera1Name, VisionConstants.robotToCamera1));
+                    VisionConstants.camera1Name, VisionConstants.robotToCamera1),
+                new VisionIOPhotonVision(
+                    VisionConstants.camera2Name, VisionConstants.robotToCamera2));
         this.elevator = new Elevator(new ElevatorIOReal());
         this.endEffector = new EndEffector(new EndEffectorIOReal());
         break;
@@ -174,7 +176,7 @@ public class RobotContainer {
             .withTimeout(1));
     NamedCommands.registerCommand(
         "autoScore4",
-        (StateCommands.setMechanismState(ElevatorState.L4))
+        (StateCommands.setMechanismState(ElevatorState.L4Force))
             .andThen(new WaitCommand(1.5))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitCommand(1))
@@ -276,8 +278,8 @@ public class RobotContainer {
             DriveCommands.alignToReef(
                 drive,
                 () -> drive.getScoreLocations()[0],
-                () -> vision.getReefPose(0, drive.getScoreLocations()[0])))
-        .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
+                () -> vision.getReefPose(0, drive.getScoreLocations()[0])));
+    // .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .povRight()
@@ -287,8 +289,8 @@ public class RobotContainer {
             DriveCommands.alignToReef(
                 drive,
                 () -> drive.getScoreLocations()[1],
-                () -> vision.getReefPose(1, drive.getScoreLocations()[1])))
-        .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
+                () -> vision.getReefPose(1, drive.getScoreLocations()[1])));
+    // .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
 
     controller
         .leftTrigger()

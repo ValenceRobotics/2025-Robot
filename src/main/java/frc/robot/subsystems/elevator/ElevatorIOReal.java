@@ -116,6 +116,9 @@ public class ElevatorIOReal implements ElevatorIO {
       case L4Score:
         seekPosition(l4ScorePosition.get());
         break;
+      case L4Force:
+        seekPosition(l4Position.get());
+        break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));
         break;
