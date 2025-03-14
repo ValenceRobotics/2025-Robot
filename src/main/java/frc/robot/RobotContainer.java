@@ -26,9 +26,12 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
+import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.commands.DriveCommands;
@@ -76,7 +79,7 @@ public class RobotContainer {
         drive =
             new Drive(
                 new GyroIOPigeon2(),
-                new ModuleIOSpark2(0, IdleMode.kBrake),
+                new ModuleIOSpark(0, IdleMode.kBrake),
                 new ModuleIOSpark(1, IdleMode.kBrake),
                 new ModuleIOSpark(2, IdleMode.kBrake),
                 new ModuleIOSpark(3, IdleMode.kBrake),
@@ -177,17 +180,22 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4Force))
-            .andThen(new WaitCommand(1))
+            .andThen(
+                new WaitUntilCommand(
+                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
-            .andThen(new WaitCommand(.7))
+            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
+            .andThen(
+                new WaitUntilCommand(
+                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
             .withTimeout(2.7));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
-            .andThen(new WaitCommand(1.5)));
+            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.HasCoral)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines

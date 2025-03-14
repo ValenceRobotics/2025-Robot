@@ -15,10 +15,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import frc.robot.RobotState;
+import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.util.ElevatorMath;
 import frc.robot.util.LoggedTunableNumber;
@@ -47,6 +49,7 @@ public class ElevatorIOSim implements ElevatorIO {
   private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 5.1);
   private LoggedTunableNumber l2Position = new LoggedTunableNumber("Elevator/L2Position", 9.3);
   private LoggedTunableNumber l3Position = new LoggedTunableNumber("Elevator/L3Position", 18.3);
+  private boolean atSetpoint = false;
 
   public ElevatorIOSim() {
 
@@ -98,6 +101,11 @@ public class ElevatorIOSim implements ElevatorIO {
         break;
       case L4Force:
         seekPosition(l4Position.get());
+        if (MathUtil.isNear(31.8, maxSim.getPosition(), 0.2)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case L4Score:
         seekPosition(l4ScorePosition.get());
@@ -106,6 +114,12 @@ public class ElevatorIOSim implements ElevatorIO {
 
     if (m_elevatorSim.getPositionMeters() == 0) {
       maxSim.setPosition(0);
+    }
+
+    if (atSetpoint == true) {
+      RobotState.setElevatorSetpoint(ElevatorSetpoint.AtSetpoint);
+    } else {
+      RobotState.setElevatorSetpoint(ElevatorSetpoint.NotAtSetpoint);
     }
 
     m_elevatorSim.setInput(maxSim.getAppliedOutput() * RoboRioSim.getVInVoltage());
@@ -129,6 +143,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.velocityMetersPerSec = m_elevatorSim.getVelocityMetersPerSecond();
     inputs.currentAmps = new double[] {m_elevatorSim.getCurrentDrawAmps()};
     inputs.state = RobotState.getCurrentElevatorState();
+    inputs.velocityRotationsPerSec = maxSim.getVelocity();
   }
 
   @Override

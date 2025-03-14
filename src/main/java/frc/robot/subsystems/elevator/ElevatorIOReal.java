@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
@@ -97,6 +98,11 @@ public class ElevatorIOReal implements ElevatorIO {
         if (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01 && getLimitSwitchState()) {
           setVoltage(0);
         }
+        if (!getLimitSwitchState()) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case Intake:
         seekPosition(0.5);
@@ -118,6 +124,12 @@ public class ElevatorIOReal implements ElevatorIO {
         break;
       case L4Force:
         seekPosition(l4Position.get());
+        if (MathUtil.isNear(31.3, elevatorMaster.getEncoder().getPosition(), 0.2)
+            && (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));
