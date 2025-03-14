@@ -13,6 +13,12 @@
         {
           "type": "named",
           "data": {
+            "name": "autoAlignLeft"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "autoScore4"
           }
         },
@@ -32,6 +38,12 @@
           "type": "path",
           "data": {
             "pathName": "HP to D"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoAlignRight"
           }
         },
         {

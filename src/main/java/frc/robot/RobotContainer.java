@@ -195,7 +195,8 @@ public class RobotContainer {
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
-            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.HasCoral)));
+            .andThen(
+                new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.HasCoral)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
