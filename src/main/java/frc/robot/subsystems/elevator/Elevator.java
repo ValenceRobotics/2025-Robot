@@ -51,6 +51,5 @@ public class Elevator extends SubsystemBase {
     io.resetElevatorEncoder();
   }
 
-  // Todo: add methods, add elevator poses, figure out state logic
 
 }

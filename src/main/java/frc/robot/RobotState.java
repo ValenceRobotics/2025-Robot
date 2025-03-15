@@ -42,6 +42,11 @@ public class RobotState {
     Reverse
   }
 
+  public enum SystemMode {
+    Manual,
+    Auto
+  }
+
   // Private state tracking
   private ElevatorState currentElevatorState = ElevatorState.Home;
   private ElevatorState queuedElevatorState = ElevatorState.Home;
@@ -50,10 +55,20 @@ public class RobotState {
   private CoralState coralState = CoralState.HasCoral; // set no coral later
   private EndEffectorState endEffectorState = EndEffectorState.Stopped;
   private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
+  private SystemMode systemMode = SystemMode.Auto;
 
   // Singleton accessor
   public static RobotState getInstance() {
     return instance;
+  }
+
+  public static void setSystemMode(SystemMode mode) {
+    instance.systemMode = mode;
+    Logger.recordOutput("RobotState/SystemMode", mode.toString());
+  }
+
+  public static SystemMode getSystemMode() {
+    return instance.systemMode;
   }
 
   public static void setElevatorSetpoint(ElevatorSetpoint state) {
@@ -73,6 +88,8 @@ public class RobotState {
       instance.currentElevatorState = ElevatorState.Home; // Home executes immediately
     } else if (state == ElevatorState.L4Force) {
       instance.currentElevatorState = ElevatorState.L4Force; // L4Force executes immediately
+    } else if (state == ElevatorState.Intake) {
+      instance.currentElevatorState = ElevatorState.Intake; // Intake executes immediately
     }
     Logger.recordOutput("RobotState/QueuedElevatorState", state.toString());
   }
@@ -133,11 +150,17 @@ public class RobotState {
 
   // Elevator state validation
   private static boolean canExecuteQueuedState() {
-    if (instance.queuedElevatorState == ElevatorState.Home
-        || instance.queuedElevatorState == ElevatorState.L4Force) {
-      return true; // Home state has no requirements, force override in l4 auto
+    if (instance.systemMode == SystemMode.Auto) {
+      if (instance.queuedElevatorState == ElevatorState.Home
+          || instance.queuedElevatorState == ElevatorState.L4Force
+          || instance.queuedElevatorState == ElevatorState.Intake) {
+        return true; // Home state has no requirements, force override in l4 auto
+      }
+      return instance.driveState == DriveState.Aligned
+          && instance.coralState == CoralState.HasCoral;
+    } else {
+      return true;
     }
-    return instance.driveState == DriveState.Aligned && instance.coralState == CoralState.HasCoral;
   }
 
   // Private constructor for singleton

@@ -34,6 +34,7 @@ import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
+import frc.robot.RobotState.SystemMode;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.EndEffector.EndEffector;
@@ -324,6 +325,12 @@ public class RobotContainer {
         .button(7)
         .whileTrue(StateCommands.setMechanismState(EndEffectorState.Reverse))
         .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
+
+    // Figure out button
+    controller
+        .button(-1)
+        .whileTrue(StateCommands.setMechanismState(SystemMode.Manual))
+        .onFalse(StateCommands.setMechanismState(SystemMode.Auto));
   }
 
   /**
