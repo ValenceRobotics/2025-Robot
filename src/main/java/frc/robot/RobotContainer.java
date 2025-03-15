@@ -322,13 +322,13 @@ public class RobotContainer {
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
     controller
-        .button(7)
+        .button(10)
         .whileTrue(StateCommands.setMechanismState(EndEffectorState.Reverse))
         .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
 
     // Figure out button
     controller
-        .button(-1)
+        .button(7)
         .whileTrue(StateCommands.setMechanismState(SystemMode.Manual))
         .onFalse(StateCommands.setMechanismState(SystemMode.Auto));
   }

@@ -19,6 +19,8 @@ public class StateCommands {
               RobotState.setDriveState((DriveState) state);
             } else if (state instanceof EndEffectorState) {
               RobotState.setEndEffectorState((EndEffectorState) state);
+            } else if (state instanceof SystemMode) {
+              RobotState.setSystemMode((SystemMode) state);
             }
           }
         });
