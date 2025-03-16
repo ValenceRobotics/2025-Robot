@@ -181,9 +181,7 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4Force))
-            .andThen(
-                new WaitUntilCommand(
-                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
+            .andThen(new WaitCommand(1))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
@@ -191,7 +189,7 @@ public class RobotContainer {
             .andThen(
                 new WaitUntilCommand(
                     () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
-            .withTimeout(2.7));
+            .withTimeout(2));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)

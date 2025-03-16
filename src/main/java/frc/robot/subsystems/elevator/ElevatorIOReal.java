@@ -125,7 +125,7 @@ public class ElevatorIOReal implements ElevatorIO {
       case L4Force:
         seekPosition(l4Position.get());
         if (MathUtil.isNear(31.3, elevatorMaster.getEncoder().getPosition(), 0.2)
-            && (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.01)) {
+            && (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.05)) {
           atSetpoint = true;
         } else {
           atSetpoint = false;
