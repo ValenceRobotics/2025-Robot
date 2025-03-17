@@ -32,6 +32,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
+import frc.robot.RobotState.SingleTagMode;
 import frc.robot.subsystems.vision.VisionIO.PoseObservationType;
 import frc.robot.subsystems.vision.VisionIO.SingleTagPoseObservation;
 import frc.robot.subsystems.vision.VisionIO.TargetObservation;
@@ -286,7 +288,12 @@ public class Vision extends SubsystemBase {
   public Pose2d getReefPose(int camIndex, Pose2d finalPose) {
     var tagPose = getSingleTagPose(camIndex);
     // Use estimated pose if tag pose is not present
-    if (tagPose.equals(new Pose2d())) return poseSupplier.get();
+    if (tagPose.equals(new Pose2d())) {
+      RobotState.setSingleTagMode(SingleTagMode.NotAvailable);
+      return poseSupplier.get();
+    }
+      
+    RobotState.setSingleTagMode(SingleTagMode.Available);
     // Use distance from estimated pose to final pose to get t value
     final double t =
         MathUtil.clamp(

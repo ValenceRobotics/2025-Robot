@@ -83,7 +83,7 @@ public class RobotContainer {
                 new ModuleIOSpark(0, IdleMode.kBrake),
                 new ModuleIOSpark(1, IdleMode.kBrake),
                 new ModuleIOSpark(2, IdleMode.kBrake),
-                new ModuleIOSpark(3, IdleMode.kBrake),
+                new ModuleIOSpark(3, IdleMode.kCoast),
                 (pose) -> {});
 
         this.vision =

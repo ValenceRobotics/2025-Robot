@@ -18,6 +18,11 @@ public class RobotState {
     testing
   }
 
+  public enum SingleTagMode {
+    Available,
+    NotAvailable
+  }
+
   public enum ElevatorSetpoint {
     AtSetpoint,
     NotAtSetpoint
@@ -56,10 +61,20 @@ public class RobotState {
   private EndEffectorState endEffectorState = EndEffectorState.Stopped;
   private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
   private SystemMode systemMode = SystemMode.Auto;
+  private SingleTagMode singleTagMode = SingleTagMode.NotAvailable;
 
   // Singleton accessor
   public static RobotState getInstance() {
     return instance;
+  }
+
+  public static void setSingleTagMode(SingleTagMode state) {
+    instance.singleTagMode = state;
+    Logger.recordOutput("RobotState/Single Tag Mode", state.toString());
+  }
+
+  public static SingleTagMode getSingleTagMode() {
+    return instance.singleTagMode;
   }
 
   public static void setSystemMode(SystemMode mode) {
