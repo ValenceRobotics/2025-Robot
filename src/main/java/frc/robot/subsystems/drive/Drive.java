@@ -27,6 +27,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -50,11 +51,13 @@ import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotState;
 import frc.robot.RobotState.DriveState;
+import frc.robot.RobotState.SingleTagMode;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
 import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.LoggedTunableNumber;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -71,8 +74,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final Alert gyroDisconnectedAlert =
       new Alert("Disconnected gyro, using kinematics as fallback.", AlertType.kError);
 
-  private final SwerveSetpointGenerator setpointGenerator;
-  private SwerveSetpoint previousSetpoint;
+  // private final SwerveSetpointGenerator setpointGenerator;
+  // private SwerveSetpoint previousSetpoint;
 
   private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(moduleTranslations);
   private Rotation2d rawGyroRotation = new Rotation2d();
@@ -86,11 +89,21 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private final SwerveDrivePoseEstimator poseEstimator =
       new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
 
+  private final SwerveDrivePoseEstimator alignPoseEstimator =
+      new SwerveDrivePoseEstimator(kinematics, rawGyroRotation, lastModulePositions, new Pose2d());
+
   private final Consumer<Pose2d> resetSimulationPoseCallBack;
 
   Pose2d[] scoreLocations = {new Pose2d(), new Pose2d()};
 
   private Pose2d closestHPTag = new Pose2d();
+
+  Pose2d verificationPose = new Pose2d();
+
+  private static final LoggedTunableNumber minDistanceTagPoseBlend =
+      new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
+  private static final LoggedTunableNumber maxDistanceTagPoseBlend =
+      new LoggedTunableNumber("RobotState/MaxDistanceTagPoseBlend", Units.inchesToMeters(36.0));
 
   public Drive(
       GyroIO gyroIO,
@@ -134,9 +147,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
           Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
         });
 
-    setpointGenerator = new SwerveSetpointGenerator(ppConfig, Units.rotationsToRadians(10.0));
-    previousSetpoint =
-        new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
+    // setpointGenerator = new SwerveSetpointGenerator(ppConfig, Units.rotationsToRadians(10.0));
+    // previousSetpoint =
+    //     new SwerveSetpoint(getChassisSpeeds(), getModuleStates(), DriveFeedforwards.zeros(4));
 
     // Configure SysId
     sysId =
@@ -212,6 +225,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
       // Apply update
       poseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
+      alignPoseEstimator.updateWithTime(sampleTimestamps[i], rawGyroRotation, modulePositions);
     }
 
     scoreLocations = findClosestReefTag(getPose());
@@ -225,10 +239,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    if ((Math.abs(getPose().getX() - getScoreLocations()[0].getX()) <= 0.01)
-            && ((Math.abs(getPose().getY() - getScoreLocations()[0].getY()) <= 0.01))
-        || (Math.abs(getPose().getX() - getScoreLocations()[1].getX()) <= 0.01)
-            && ((Math.abs(getPose().getY() - getScoreLocations()[1].getY()) <= 0.01))) {
+    if (RobotState.getSingleTagMode() == SingleTagMode.NotAvailable) {
+      verificationPose = getPose();
+    } else {
+      verificationPose = getSingleTagPose();
+    }
+
+    if ((Math.abs(verificationPose.getX() - getScoreLocations()[0].getX()) <= 0.01)
+            && ((Math.abs(verificationPose.getY() - getScoreLocations()[0].getY()) <= 0.01))
+        || (Math.abs(verificationPose.getX() - getScoreLocations()[1].getX()) <= 0.01)
+            && ((Math.abs(verificationPose.getY() - getScoreLocations()[1].getY()) <= 0.01))) {
       RobotState.setDriveState(DriveState.Aligned);
     } else {
       RobotState.setDriveState(DriveState.Driving);
@@ -282,6 +302,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         }
       }
     }
+    RobotState.updateTagFromSide(closest);
     Logger.recordOutput("Alignment/ClosestReefTag", closest);
 
     Pose2d[] scoringLocations = new Pose2d[2];
@@ -420,6 +441,30 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     return poseEstimator.getEstimatedPosition();
   }
 
+  @AutoLogOutput(key = "Odometry/SingleTagPose")
+  public Pose2d getSingleTagPose() {
+    return alignPoseEstimator.getEstimatedPosition();
+  }
+
+  public Pose2d getReefPose(Pose2d finalPose) {
+    var tagPose = getSingleTagPose();
+    // Use estimated pose if tag pose is not present
+    if (RobotState.getSingleTagMode() == SingleTagMode.NotAvailable) {
+      return getPose();
+    }
+
+    // Use distance from estimated pose to final pose to get t value
+    final double t =
+        MathUtil.clamp(
+            (getPose().getTranslation().getDistance(finalPose.getTranslation())
+                    - minDistanceTagPoseBlend.get())
+                / (maxDistanceTagPoseBlend.get() - minDistanceTagPoseBlend.get()),
+            0.0,
+            1.0);
+            
+    return getPose().interpolate(tagPose, 1.0 - t);
+  }
+
   /** Returns the current odometry rotation. */
   public Rotation2d getRotation() {
     return getPose().getRotation();
@@ -429,6 +474,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   public void resetOdometry(Pose2d pose) {
     resetSimulationPoseCallBack.accept(pose);
     poseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
+    alignPoseEstimator.resetPosition(rawGyroRotation, getModulePositions(), pose);
   }
 
   @AutoLogOutput(key = "RobotState/FieldVelocity")
@@ -444,6 +490,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+  }
+
+  @Override
+  public void acceptSingleTag(Pose2d visionRobotPoseMeters, double timestampSeconds) {
+
+    alignPoseEstimator.addVisionMeasurement(visionRobotPoseMeters, timestampSeconds);
   }
 
   /** Returns the maximum linear speed in meters per sec. */

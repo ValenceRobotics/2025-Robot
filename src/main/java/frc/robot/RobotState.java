@@ -1,5 +1,9 @@
 package frc.robot;
 
+import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Pose3d;
+import frc.robot.subsystems.drive.DriveConstants;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class RobotState {
@@ -30,9 +34,12 @@ public class RobotState {
 
   public enum DriveState {
     Driving,
-    Aligning,
-    CloseToAlign,
     Aligned
+  }
+
+  public enum AlignState { // extra work fuse with drive state later
+    Aligning,
+    NotAligning
   }
 
   public enum CoralState {
@@ -62,10 +69,20 @@ public class RobotState {
   private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
   private SystemMode systemMode = SystemMode.Auto;
   private SingleTagMode singleTagMode = SingleTagMode.NotAvailable;
+  private AlignState alignState = AlignState.NotAligning;
 
   // Singleton accessor
   public static RobotState getInstance() {
     return instance;
+  }
+
+  public static void setAlignState(AlignState state) {
+    instance.alignState = state;
+    Logger.recordOutput("RobotState/AlignState", state.toString());
+  }
+
+  public static AlignState getAlignState() {
+    return instance.alignState;
   }
 
   public static void setSingleTagMode(SingleTagMode state) {
@@ -175,6 +192,76 @@ public class RobotState {
           && instance.coralState == CoralState.HasCoral;
     } else {
       return true;
+    }
+  }
+
+  public enum TagChoice {
+    TAG_6(6),
+    TAG_7(7),
+    TAG_8(8),
+    TAG_9(9),
+    TAG_10(10),
+    TAG_11(11),
+    TAG_17(17),
+    TAG_18(18),
+    TAG_19(19),
+    TAG_20(20),
+    TAG_21(21),
+    TAG_22(22),
+    NONE(0);
+
+    private final int id;
+
+    TagChoice(int id) {
+      this.id = id;
+    }
+
+    public int getId() {
+      return id;
+    }
+
+    public static TagChoice fromId(int id) {
+      for (TagChoice tag : values()) {
+        if (tag.getId() == id) {
+          return tag;
+        }
+      }
+      return NONE;
+    }
+  }
+
+  // Add to existing fields
+  private TagChoice currentTag = TagChoice.NONE;
+
+  // Add getters/setters
+  public static void setCurrentTag(TagChoice tag) {
+    instance.currentTag = tag;
+    Logger.recordOutput("RobotState/CurrentTag", tag.toString());
+  }
+
+  public static TagChoice getCurrentTag() {
+    return instance.currentTag;
+  }
+
+  // Helper method to get tag ID from ReefTags
+  public static void updateTagFromSide(DriveConstants.ReefTags side) {
+    if (side == null) {
+      setCurrentTag(TagChoice.NONE);
+      return;
+    }
+
+    Optional<Pose3d> tagPose = side.getPose();
+    if (tagPose.isEmpty()) {
+      setCurrentTag(TagChoice.NONE);
+      return;
+    }
+
+    // Find tag ID from pose
+    for (AprilTag tag : DriveConstants.aprilTagLayout.getTags()) {
+      if (tag.pose.equals(tagPose.get())) {
+        setCurrentTag(TagChoice.fromId(tag.ID));
+        return;
+      }
     }
   }
 

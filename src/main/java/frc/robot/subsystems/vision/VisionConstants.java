@@ -54,7 +54,7 @@ public class VisionConstants {
   public static Transform3d robotToCamera1 =
       new Transform3d(
           Units.inchesToMeters(12.465),
-          Units.inchesToMeters(-6.610),
+          Units.inchesToMeters(-6.735),
           Units.inchesToMeters(9.584),
           new Rotation3d(0.0, Units.degreesToRadians(-5), Units.degreesToRadians(60)));
   public static Transform3d robotToCamera2 =
@@ -64,7 +64,8 @@ public class VisionConstants {
           Units.inchesToMeters(15.272),
           new Rotation3d(0.0, Units.degreesToRadians(10), 0));
 
-  public static Transform3d[] robotToCamera = new Transform3d[] {robotToCamera0, robotToCamera1};
+  public static Transform3d[] robotToCamera =
+      new Transform3d[] {robotToCamera0, robotToCamera1, robotToCamera2};
 
   // Basic filtering thresholds
   public static double maxAmbiguity = 0.3;

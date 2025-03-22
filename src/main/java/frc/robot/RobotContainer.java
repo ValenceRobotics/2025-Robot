@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.AlignState;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.ElevatorSetpoint;
@@ -83,7 +84,7 @@ public class RobotContainer {
                 new ModuleIOSpark(0, IdleMode.kBrake),
                 new ModuleIOSpark(1, IdleMode.kBrake),
                 new ModuleIOSpark(2, IdleMode.kBrake),
-                new ModuleIOSpark(3, IdleMode.kCoast),
+                new ModuleIOSpark(3, IdleMode.kBrake),
                 (pose) -> {});
 
         this.vision =
@@ -231,7 +232,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getRawAxis(2)));
 
     controller
         .rightBumper()
@@ -284,10 +285,11 @@ public class RobotContainer {
         .or(controller.pov(225))
         .whileTrue(
             DriveCommands.alignToReef(
-                drive,
-                () -> drive.getScoreLocations()[0],
-                () -> vision.getReefPose(0, drive.getScoreLocations()[0])));
-    // .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
+                    drive,
+                    () -> drive.getScoreLocations()[0],
+                    () -> drive.getReefPose(drive.getScoreLocations()[0]))
+                .alongWith(Commands.runOnce(() -> RobotState.setAlignState(AlignState.Aligning))))
+        .onFalse(Commands.runOnce(() -> RobotState.setAlignState(AlignState.NotAligning)));
 
     controller
         .povRight()
@@ -295,10 +297,11 @@ public class RobotContainer {
         .or(controller.pov(135))
         .whileTrue(
             DriveCommands.alignToReef(
-                drive,
-                () -> drive.getScoreLocations()[1],
-                () -> vision.getReefPose(1, drive.getScoreLocations()[1])));
-    // .onFalse(Commands.runOnce(() -> RobotState.setDriveState(DriveState.Driving)));
+                    drive,
+                    () -> drive.getScoreLocations()[1],
+                    () -> drive.getReefPose(drive.getScoreLocations()[1]))
+                .alongWith(Commands.runOnce(() -> RobotState.setAlignState(AlignState.Aligning))))
+        .onFalse(Commands.runOnce(() -> RobotState.setAlignState(AlignState.NotAligning)));
 
     controller
         .leftTrigger()
