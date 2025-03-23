@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
@@ -160,7 +159,6 @@ public class RobotContainer {
                 () -> drive.getScoreLocations()[0],
                 () -> drive.getReefPose(drive.getScoreLocations()[0]))
             .until(() -> RobotState.getDriveState() == DriveState.Aligned)
-            .alongWith(StateCommands.setMechanismState(ElevatorState.L4))
             .withTimeout(3));
     NamedCommands.registerCommand(
         "autoAlignRight",
@@ -169,7 +167,6 @@ public class RobotContainer {
                 () -> drive.getScoreLocations()[1],
                 () -> drive.getReefPose(drive.getScoreLocations()[1]))
             .until(() -> RobotState.getDriveState() == DriveState.Aligned)
-            .alongWith(StateCommands.setMechanismState(ElevatorState.L4))
             .withTimeout(3));
     NamedCommands.registerCommand(
         "autoScore1",
@@ -182,12 +179,13 @@ public class RobotContainer {
             .withTimeout(1));
     NamedCommands.registerCommand(
         "autoScore4",
-        (StateCommands.setMechanismState(EndEffectorState.Score))
-            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() ==
-            CoralState.NoCoral))
+        (StateCommands.setMechanismState(ElevatorState.L4Force))
+            .andThen(new WaitCommand(1))
+            .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
+            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .andThen(new WaitUntilCommand(() -> !elevator.getLimitSwitch()))
+            .andThen(new WaitCommand(0.2))
             .withTimeout(1.5));
     NamedCommands.registerCommand(
         "getCoralHp",
@@ -247,19 +245,21 @@ public class RobotContainer {
             StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
-    Trigger aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
+    // Trigger aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
 
-    aimbotTrigger.whileTrue(
-        DriveCommands.joystickDriveAtAngle(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () ->
-                drive
-                    .getPose()
-                    .relativeTo(new Pose2d())
-                    .getRotation()) // Todo add logic for facing towards center
-        );
+    // aimbotTrigger.whileTrue(
+    //     DriveCommands.joystickDriveAtAngle(
+    //         drive,
+    //         () -> -controller.getLeftY(),
+    //         () -> -controller.getLeftX(),
+    //         () ->
+    //             drive
+    //                 .getPose()
+    //                 .relativeTo(
+    //                     DriverStation.getAlliance().get().equals(Alliance.Blue)
+    //                         ? FieldConstants.Reef.blueReefCenter
+    //                         : FieldConstants.Reef.redReefCenter)
+    //                 .getRotation()));
 
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));

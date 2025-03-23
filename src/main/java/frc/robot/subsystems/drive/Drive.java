@@ -510,11 +510,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
-    if (RobotState.getAlignState()
-        == AlignState
-            .NotInAlignRange) { // check this in real robot in case it consumes too much resources
+    if (RobotState.getAlignState() == AlignState.NotInAlignRange) {
+      Logger.recordOutput("Drive/Align Using Global Pose", true);
       alignPoseEstimator.addVisionMeasurement(
           visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    } else {
+      Logger.recordOutput("Drive/Align Using Global Pose", false);
     }
   }
 

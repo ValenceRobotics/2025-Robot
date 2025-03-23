@@ -190,8 +190,7 @@ public class RobotState {
         return true; // Home state has no requirements, force override in l4 auto
       }
       return instance.driveState == DriveState.Aligned
-          || instance.driveState == DriveState.CloseToAlign
-              && instance.coralState == CoralState.HasCoral;
+          && instance.coralState == CoralState.HasCoral;
     } else {
       return true;
     }

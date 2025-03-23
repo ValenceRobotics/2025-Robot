@@ -7,6 +7,8 @@
 
 package frc.robot.util;
 
+import static frc.robot.subsystems.vision.VisionConstants.aprilTagLayout;
+
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -135,6 +137,20 @@ public class FieldConstants {
         branchPositions2d.add(fillLeft2d);
       }
     }
+
+    public static Pose2d blueReefCenter =
+        aprilTagLayout
+            .getTagPose(18)
+            .get()
+            .toPose2d()
+            .plus(new Transform2d(Units.inchesToMeters(32.5), 0, new Rotation2d()));
+
+    public static Pose2d redReefCenter =
+        aprilTagLayout
+            .getTagPose(18)
+            .get()
+            .toPose2d()
+            .plus(new Transform2d(Units.inchesToMeters(32.5), 0, new Rotation2d()));
   }
 
   public static class StagingPositions {
