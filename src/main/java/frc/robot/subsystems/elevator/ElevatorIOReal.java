@@ -149,6 +149,7 @@ public class ElevatorIOReal implements ElevatorIO {
     inputs.velocityRotationsPerSec = elevatorMaster.getEncoder().getVelocity();
     inputs.currentAmps = new double[] {elevatorMaster.getOutputCurrent()};
     inputs.state = RobotState.getCurrentElevatorState();
+    inputs.limitSwitch = getLimitSwitchState();
   }
 
   public boolean getLimitSwitchState() {

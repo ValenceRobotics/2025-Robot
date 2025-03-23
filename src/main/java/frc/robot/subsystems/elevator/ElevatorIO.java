@@ -14,6 +14,7 @@ public interface ElevatorIO {
     public double appliedVolts = 0.0;
     public double[] currentAmps = new double[] {};
     public ElevatorState state = ElevatorState.Home;
+    public boolean limitSwitch = false;
   }
 
   public default void updateInputs(ElevatorIOInputs inputs) {}

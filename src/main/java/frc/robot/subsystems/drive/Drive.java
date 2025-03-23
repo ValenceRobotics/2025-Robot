@@ -20,10 +20,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
@@ -50,6 +47,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotState;
+import frc.robot.RobotState.AlignState;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.SingleTagMode;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
@@ -99,6 +97,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   private Pose2d closestHPTag = new Pose2d();
 
   Pose2d verificationPose = new Pose2d();
+
+  ReefTags closestReefTag = null;
 
   private static final LoggedTunableNumber minDistanceTagPoseBlend =
       new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
@@ -239,17 +239,36 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
+    if (closestReefTag != null) {
+      if (getPose().minus(closestReefTag.getPose().get().toPose2d()).getTranslation().getNorm()
+          <= (Units.inchesToMeters(36))) {
+        RobotState.setAlignState(AlignState.InAlignRange);
+      } else {
+        RobotState.setAlignState(AlignState.NotInAlignRange);
+      }
+    }
+
     if (RobotState.getSingleTagMode() == SingleTagMode.NotAvailable) {
       verificationPose = getPose();
     } else {
       verificationPose = getSingleTagPose();
     }
 
-    if ((Math.abs(verificationPose.getX() - getScoreLocations()[0].getX()) <= 0.01)
-            && ((Math.abs(verificationPose.getY() - getScoreLocations()[0].getY()) <= 0.01))
-        || (Math.abs(verificationPose.getX() - getScoreLocations()[1].getX()) <= 0.01)
-            && ((Math.abs(verificationPose.getY() - getScoreLocations()[1].getY()) <= 0.01))) {
+    // if ((Math.abs(verificationPose.getX() - getScoreLocations()[0].getX()) <= 0.01)
+    //         && ((Math.abs(verificationPose.getY() - getScoreLocations()[0].getY()) <= 0.01))
+    //     || (Math.abs(verificationPose.getX() - getScoreLocations()[1].getX()) <= 0.01)
+    //         && ((Math.abs(verificationPose.getY() - getScoreLocations()[1].getY()) <= 0.01))) {
+    //   RobotState.setDriveState(DriveState.Aligned);
+    // } else {
+    //   RobotState.setDriveState(DriveState.Driving);
+    // }
+
+    if (verificationPose.minus(getScoreLocations()[0]).getTranslation().getNorm() <= 0.015
+        || verificationPose.minus(getScoreLocations()[1]).getTranslation().getNorm() <= 0.015) {
       RobotState.setDriveState(DriveState.Aligned);
+    } else if ((verificationPose.minus(getScoreLocations()[0]).getTranslation().getNorm() <= 0.2
+        || verificationPose.minus(getScoreLocations()[1]).getTranslation().getNorm() <= 0.2)) {
+      RobotState.setDriveState(DriveState.CloseToAlign);
     } else {
       RobotState.setDriveState(DriveState.Driving);
     }
@@ -302,6 +321,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         }
       }
     }
+    closestReefTag = closest;
     RobotState.updateTagFromSide(closest);
     Logger.recordOutput("Alignment/ClosestReefTag", closest);
 
@@ -461,7 +481,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
                 / (maxDistanceTagPoseBlend.get() - minDistanceTagPoseBlend.get()),
             0.0,
             1.0);
-            
+
     return getPose().interpolate(tagPose, 1.0 - t);
   }
 
@@ -490,6 +510,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
       Matrix<N3, N1> visionMeasurementStdDevs) {
     poseEstimator.addVisionMeasurement(
         visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    if (RobotState.getAlignState()
+        == AlignState
+            .NotInAlignRange) { // check this in real robot in case it consumes too much resources
+      alignPoseEstimator.addVisionMeasurement(
+          visionRobotPoseMeters, timestampSeconds, visionMeasurementStdDevs);
+    }
   }
 
   @Override

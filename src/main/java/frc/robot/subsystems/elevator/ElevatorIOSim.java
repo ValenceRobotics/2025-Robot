@@ -144,6 +144,7 @@ public class ElevatorIOSim implements ElevatorIO {
     inputs.currentAmps = new double[] {m_elevatorSim.getCurrentDrawAmps()};
     inputs.state = RobotState.getCurrentElevatorState();
     inputs.velocityRotationsPerSec = maxSim.getVelocity();
+    inputs.limitSwitch = m_elevatorSim.getPositionMeters() == 0 ? false : true;
   }
 
   @Override

@@ -209,8 +209,7 @@ public class Vision extends SubsystemBase {
     }
 
     if (RobotState.getSingleTagMode() == SingleTagMode.Available
-        && RobotState.getAlignState()
-            == AlignState.Aligning) { // switch to use singletag state thing
+        && RobotState.getAlignState() == AlignState.InAlignRange) {
       if (getTxTyPose(RobotState.getCurrentTag().getId()).isPresent()) {
         TxTyPoseRecord record = getTxTyPose(RobotState.getCurrentTag().getId()).get();
         consumer.acceptSingleTag(record.pose(), record.timestamp());

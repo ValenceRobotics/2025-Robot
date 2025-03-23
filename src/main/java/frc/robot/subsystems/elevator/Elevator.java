@@ -50,4 +50,8 @@ public class Elevator extends SubsystemBase {
   public void resetElevatorEncoder() {
     io.resetElevatorEncoder();
   }
+
+  public boolean getLimitSwitch() {
+    return inputs.limitSwitch;
+  }
 }

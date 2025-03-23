@@ -34,12 +34,13 @@ public class RobotState {
 
   public enum DriveState {
     Driving,
+    CloseToAlign,
     Aligned
   }
 
-  public enum AlignState { // extra work fuse with drive state later
-    Aligning,
-    NotAligning
+  public enum AlignState {
+    InAlignRange,
+    NotInAlignRange
   }
 
   public enum CoralState {
@@ -69,7 +70,7 @@ public class RobotState {
   private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
   private SystemMode systemMode = SystemMode.Auto;
   private SingleTagMode singleTagMode = SingleTagMode.NotAvailable;
-  private AlignState alignState = AlignState.NotAligning;
+  private AlignState alignState = AlignState.NotInAlignRange;
 
   // Singleton accessor
   public static RobotState getInstance() {
@@ -189,7 +190,8 @@ public class RobotState {
         return true; // Home state has no requirements, force override in l4 auto
       }
       return instance.driveState == DriveState.Aligned
-          && instance.coralState == CoralState.HasCoral;
+          || instance.driveState == DriveState.CloseToAlign
+              && instance.coralState == CoralState.HasCoral;
     } else {
       return true;
     }

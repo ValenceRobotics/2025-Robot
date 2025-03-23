@@ -28,11 +28,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotState.AlignState;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
-import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.RobotState.SystemMode;
@@ -159,16 +158,18 @@ public class RobotContainer {
         DriveCommands.alignToReef(
                 drive,
                 () -> drive.getScoreLocations()[0],
-                () -> vision.getReefPose(0, drive.getScoreLocations()[0]))
+                () -> drive.getReefPose(drive.getScoreLocations()[0]))
             .until(() -> RobotState.getDriveState() == DriveState.Aligned)
+            .alongWith(StateCommands.setMechanismState(ElevatorState.L4))
             .withTimeout(3));
     NamedCommands.registerCommand(
         "autoAlignRight",
         DriveCommands.alignToReef(
                 drive,
                 () -> drive.getScoreLocations()[1],
-                () -> vision.getReefPose(1, drive.getScoreLocations()[1]))
+                () -> drive.getReefPose(drive.getScoreLocations()[1]))
             .until(() -> RobotState.getDriveState() == DriveState.Aligned)
+            .alongWith(StateCommands.setMechanismState(ElevatorState.L4))
             .withTimeout(3));
     NamedCommands.registerCommand(
         "autoScore1",
@@ -181,16 +182,13 @@ public class RobotContainer {
             .withTimeout(1));
     NamedCommands.registerCommand(
         "autoScore4",
-        (StateCommands.setMechanismState(ElevatorState.L4Force))
-            .andThen(new WaitCommand(1))
-            .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
-            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
+        (StateCommands.setMechanismState(EndEffectorState.Score))
+            .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() ==
+            CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .andThen(
-                new WaitUntilCommand(
-                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
-            .withTimeout(2));
+            .andThen(new WaitUntilCommand(() -> !elevator.getLimitSwitch()))
+            .withTimeout(1.5));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
@@ -249,6 +247,20 @@ public class RobotContainer {
             StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
+    Trigger aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
+
+    aimbotTrigger.whileTrue(
+        DriveCommands.joystickDriveAtAngle(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () ->
+                drive
+                    .getPose()
+                    .relativeTo(new Pose2d())
+                    .getRotation()) // Todo add logic for facing towards center
+        );
+
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
 
@@ -285,11 +297,9 @@ public class RobotContainer {
         .or(controller.pov(225))
         .whileTrue(
             DriveCommands.alignToReef(
-                    drive,
-                    () -> drive.getScoreLocations()[0],
-                    () -> drive.getReefPose(drive.getScoreLocations()[0]))
-                .alongWith(Commands.runOnce(() -> RobotState.setAlignState(AlignState.Aligning))))
-        .onFalse(Commands.runOnce(() -> RobotState.setAlignState(AlignState.NotAligning)));
+                drive,
+                () -> drive.getScoreLocations()[0],
+                () -> drive.getReefPose(drive.getScoreLocations()[0])));
 
     controller
         .povRight()
@@ -297,12 +307,9 @@ public class RobotContainer {
         .or(controller.pov(135))
         .whileTrue(
             DriveCommands.alignToReef(
-                    drive,
-                    () -> drive.getScoreLocations()[1],
-                    () -> drive.getReefPose(drive.getScoreLocations()[1]))
-                .alongWith(Commands.runOnce(() -> RobotState.setAlignState(AlignState.Aligning))))
-        .onFalse(Commands.runOnce(() -> RobotState.setAlignState(AlignState.NotAligning)));
-
+                drive,
+                () -> drive.getScoreLocations()[1],
+                () -> drive.getReefPose(drive.getScoreLocations()[1])));
     controller
         .leftTrigger()
         .whileTrue(
@@ -330,8 +337,11 @@ public class RobotContainer {
     // Figure out button
     controller
         .button(7)
-        .whileTrue(StateCommands.setMechanismState(SystemMode.Manual))
-        .onFalse(StateCommands.setMechanismState(SystemMode.Auto));
+        .onTrue(
+            StateCommands.setMechanismState(
+                RobotState.getSystemMode() == SystemMode.Manual
+                    ? SystemMode.Auto
+                    : SystemMode.Manual));
   }
 
   /**
