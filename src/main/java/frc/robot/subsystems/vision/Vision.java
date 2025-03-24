@@ -15,7 +15,6 @@ package frc.robot.subsystems.vision;
 
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,7 +27,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
@@ -41,7 +39,6 @@ import frc.robot.subsystems.vision.VisionIO.SingleTagPoseObservation;
 import frc.robot.subsystems.vision.VisionIO.TargetObservation;
 import frc.robot.util.FieldConstants;
 import frc.robot.util.GeomUtil;
-import frc.robot.util.LoggedTunableNumber;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -316,9 +313,12 @@ public class Vision extends SubsystemBase {
   //  *
   //  * @param camIndex The index of the camera to get the tag pose from
   //  * @param finalPose The final destination pose used to calculate blending factor
-  //  * @return A blended Pose2d between estimated and tag-based poses based on distance to final pose:
-  //  *     - Returns estimated pose if no tag is visible - Interpolates between tag pose and estimated
-  //  *     pose based on distance: - More weight on tag pose when closer to minDistanceTagPoseBlend -
+  //  * @return A blended Pose2d between estimated and tag-based poses based on distance to final
+  // pose:
+  //  *     - Returns estimated pose if no tag is visible - Interpolates between tag pose and
+  // estimated
+  //  *     pose based on distance: - More weight on tag pose when closer to minDistanceTagPoseBlend
+  // -
   //  *     More weight on estimated pose when closer to maxDistanceTagPoseBlend
   //  */
   // public Pose2d getReefPose(int camIndex, Pose2d finalPose) {
@@ -343,20 +343,19 @@ public class Vision extends SubsystemBase {
 
   /**
    * Processes and adds a single AprilTag observation to the vision system.
-   * 
-   * This method calculates the robot's position based on a single AprilTag observation using 
-   * tx (azimuth) and ty (elevation) angles. It performs several geometric transformations to 
-   * convert camera-relative measurements into field-relative robot poses.
    *
-   * @param observation The SingleTagPoseObservation containing tag ID, timestamp, and distance information
+   * <p>This method calculates the robot's position based on a single AprilTag observation using tx
+   * (azimuth) and ty (elevation) angles. It performs several geometric transformations to convert
+   * camera-relative measurements into field-relative robot poses.
+   *
+   * @param observation The SingleTagPoseObservation containing tag ID, timestamp, and distance
+   *     information
    * @param target The TargetObservation containing tx and ty angles to the observed tag
    * @param cameraIndex The index of the camera that made this observation
-   *
-   * The method will skip processing if:
-   * - There is already a newer observation for the same tag
-   * - The observed tag ID is not found in the AprilTag layout
-   *
-   * The calculated robot pose is stored in txTyPoses map along with the distance and timestamp.
+   *     <p>The method will skip processing if: - There is already a newer observation for the same
+   *     tag - The observed tag ID is not found in the AprilTag layout
+   *     <p>The calculated robot pose is stored in txTyPoses map along with the distance and
+   *     timestamp.
    */
   public void addSingleTagObservation(
       SingleTagPoseObservation observation, TargetObservation target, int cameraIndex) {
