@@ -29,7 +29,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private LoggedTunableNumber l4ScoreSpeed = new LoggedTunableNumber("EndEffector/L4Score", 3);
   private LoggedTunableNumber currentSpike =
       new LoggedTunableNumber("EndEffector/current spike", 15);
-  private LoggedTunableNumber spikeTime = new LoggedTunableNumber("EndEffector/spike time", 0.25);
+  private LoggedTunableNumber spikeTime = new LoggedTunableNumber("EndEffector/spike time", 0.1);
 
   double highCurrentStartTime = 0;
 
@@ -93,12 +93,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
   public void updateInputs(EndEffectorIOInputs inputs) {
 
     Logger.recordOutput("EndEffector/Proximity", canandcolor.getProximity());
+    Logger.recordOutput("EndEffector/Proximity Sensor Connected", canandcolor.isConnected());
     // Logger.recordOutput("EndEffector/CanandColor Digout Value",
     // canandcolor.digout1().getValue());
 
     if (!canandcolor.isConnected()) {
       if (leftMotor.getOutputCurrent() >= currentSpike.get()
-          || rightMotor.getOutputCurrent() >= currentSpike.get()) {
+          || rightMotor.getOutputCurrent() >= currentSpike.get()
+              && RobotState.getEndEffectorState() == EndEffectorState.Intake) {
         Logger.recordOutput("EndEffector/Current Spike Active", true);
         if (highCurrentStartTime == 0) {
           highCurrentStartTime = Timer.getFPGATimestamp();
@@ -108,6 +110,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
       } else {
         highCurrentStartTime = 0;
         RobotState.setCoralState(CoralState.NoCoral);
+        Logger.recordOutput("EndEffector/Current Spike Active", false);
       }
     } else {
       if (canandcolor.getProximity() <= 0.06) {
@@ -116,6 +119,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
         RobotState.setCoralState(CoralState.NoCoral);
       }
     }
+
+    Logger.recordOutput(
+        "EndEffector/Current Spike Time",
+        leftMotor.getOutputCurrent() >= currentSpike.get()
+                || rightMotor.getOutputCurrent() >= currentSpike.get()
+                    && RobotState.getEndEffectorState() == EndEffectorState.Intake
+            ? Timer.getFPGATimestamp() - highCurrentStartTime
+            : highCurrentStartTime);
 
     switch (RobotState.getEndEffectorState()) {
       case Intake:

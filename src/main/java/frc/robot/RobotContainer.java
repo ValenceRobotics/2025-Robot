@@ -228,7 +228,7 @@ public class RobotContainer {
             drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
-            () -> -controller.getRawAxis(2)));
+            () -> -controller.getRightX()));
 
     controller
         .rightBumper()

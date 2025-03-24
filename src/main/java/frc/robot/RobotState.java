@@ -65,7 +65,7 @@ public class RobotState {
   private ElevatorState queuedElevatorState = ElevatorState.Home;
   private DriveState previousDriveState = DriveState.Driving;
   private DriveState driveState = DriveState.Driving;
-  private CoralState coralState = CoralState.HasCoral; // set no coral later
+  private CoralState coralState = CoralState.NoCoral; // set no coral later
   private EndEffectorState endEffectorState = EndEffectorState.Stopped;
   private ElevatorSetpoint elevatorSetpointState = ElevatorSetpoint.NotAtSetpoint;
   private SystemMode systemMode = SystemMode.Auto;
