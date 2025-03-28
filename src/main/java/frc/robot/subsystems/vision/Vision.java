@@ -197,6 +197,7 @@ public class Vision extends SubsystemBase {
         }
       }
 
+      Logger.recordOutput("Vision/anyValidTag", anyValidTag);
       RobotState.setSingleTagMode(
           anyValidTag ? SingleTagMode.Available : SingleTagMode.NotAvailable);
 

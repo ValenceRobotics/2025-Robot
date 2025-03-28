@@ -2,10 +2,8 @@ package frc.robot.subsystems.EndEffector;
 
 import static frc.robot.util.SparkUtil.*;
 
-import com.reduxrobotics.sensors.canandcolor.Canandcolor;
-import com.reduxrobotics.sensors.canandcolor.CanandcolorSettings;
-import com.reduxrobotics.sensors.canandcolor.ColorPeriod;
-import com.reduxrobotics.sensors.canandcolor.ProximityPeriod;
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+import com.ctre.phoenix6.hardware.CANrange;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -24,7 +22,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   SparkMax leftMotor = new SparkMax(EndEffectorConstants.leftMotorId, MotorType.kBrushless);
   SparkMax rightMotor = new SparkMax(EndEffectorConstants.rightMotorId, MotorType.kBrushless);
-  Canandcolor canandcolor = new Canandcolor(13);
+
+  CANrange canRange = new CANrange(13);
 
   private LoggedTunableNumber l4ScoreSpeed = new LoggedTunableNumber("EndEffector/L4Score", 3);
   private LoggedTunableNumber currentSpike =
@@ -35,37 +34,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   public EndEffectorIOReal() {
 
-    // Instantiate an empty settings object.
-    CanandcolorSettings settings = canandcolor.getSettings();
+    CANrangeConfiguration configs = new CANrangeConfiguration();
 
-    // Sets all frame periods to 0.5 seconds to achieve less than 0.1% total CANbus utilization
-    settings.setColorFramePeriod(0.5);
-    settings.setProximityFramePeriod(0.010);
-    settings.setDigoutFramePeriod(0.5);
-    settings.setStatusFramePeriod(1);
-
-    settings.setProximityIntegrationPeriod(ProximityPeriod.k5ms);
-    settings.setColorIntegrationPeriod(ColorPeriod.k25ms);
-
-    // Ensure that proximity and color frames are not sent out automatically when the sensor data
-    // updates
-    settings.setAlignProximityFramesToIntegrationPeriod(true);
-    settings.setAlignColorFramesToIntegrationPeriod(false);
-
-    // Sets digital output port 1 to use the digital logic system, setting it to normally closed
-    // settings.setDigoutPinConfig(
-    //     canandcolor.digout1().channelIndex(), DigoutPinConfig.kDigoutLogicActiveHigh);
-
-    // // Sets the digout frame trigger to send when the digout goes high or low
-    // settings.setDigoutFrameTrigger(
-    //     canandcolor.digout1().channelIndex(), DigoutFrameTrigger.kRisingAndFalling);
-
-    // Save settings to device
-    canandcolor.setSettings(settings);
-
-    // canandcolor
-    //     .digout1()
-    //     .configureSlots(new HSVDigoutConfig().setMaxProximity(0.06).setMinProximity(0));
+    canRange.getConfigurator().apply(configs);
 
     var endEffectorConfig = new SparkMaxConfig();
 
@@ -92,12 +63,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
   @Override
   public void updateInputs(EndEffectorIOInputs inputs) {
 
-    Logger.recordOutput("EndEffector/Proximity", canandcolor.getProximity());
-    Logger.recordOutput("EndEffector/Proximity Sensor Connected", canandcolor.isConnected());
+    Logger.recordOutput("EndEffector/Proximity", canRange.getDistance().getValueAsDouble());
+    Logger.recordOutput("EndEffector/Proximity Sensor Connected", canRange.isConnected());
     // Logger.recordOutput("EndEffector/CanandColor Digout Value",
     // canandcolor.digout1().getValue());
 
-    if (!canandcolor.isConnected()) {
+    if (!canRange.isConnected()) {
       if (leftMotor.getOutputCurrent() >= currentSpike.get()
           || rightMotor.getOutputCurrent() >= currentSpike.get()
               && RobotState.getEndEffectorState() == EndEffectorState.Intake) {
@@ -113,7 +84,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         Logger.recordOutput("EndEffector/Current Spike Active", false);
       }
     } else {
-      if (canandcolor.getProximity() <= 0.06) {
+      if (canRange.getDistance().getValueAsDouble() <= 0.06) {
         RobotState.setCoralState(CoralState.HasCoral);
       } else {
         RobotState.setCoralState(CoralState.NoCoral);
