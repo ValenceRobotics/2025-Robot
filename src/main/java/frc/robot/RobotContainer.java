@@ -21,6 +21,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -45,6 +47,8 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
 import frc.robot.subsystems.vision.*;
+import frc.robot.util.FieldConstants;
+
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -245,21 +249,20 @@ public class RobotContainer {
             StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
-    // Trigger aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
-
-    // aimbotTrigger.whileTrue(
-    //     DriveCommands.joystickDriveAtAngle(
-    //         drive,
-    //         () -> -controller.getLeftY(),
-    //         () -> -controller.getLeftX(),
-    //         () ->
-    //             drive
-    //                 .getPose()
-    //                 .relativeTo(
-    //                     DriverStation.getAlliance().get().equals(Alliance.Blue)
-    //                         ? FieldConstants.Reef.blueReefCenter
-    //                         : FieldConstants.Reef.redReefCenter)
-    //                 .getRotation()));
+    // drive
+    //     .getAimbotTrigger()
+    //     .whileTrue(
+    //         DriveCommands.joystickDriveAtAngle(
+    //             drive,
+    //             () -> -controller.getLeftY(),
+    //             () -> -controller.getLeftX(),
+    //             () -> drive
+    //             .getPose()
+    //             .relativeTo(
+    //                 DriverStation.getAlliance().get().equals(Alliance.Blue)
+    //                     ? FieldConstants.Reef.blueReefCenter
+    //                     : FieldConstants.Reef.redReefCenter)
+    //             .getRotation()));
 
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));

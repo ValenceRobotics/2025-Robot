@@ -43,6 +43,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -50,6 +52,7 @@ import frc.robot.RobotState;
 import frc.robot.RobotState.AlignState;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.SingleTagMode;
+import frc.robot.RobotState.SystemMode;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
 import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
@@ -99,6 +102,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   Pose2d verificationPose = new Pose2d();
 
   ReefTags closestReefTag = null;
+
+  Trigger aimbotTrigger = new Trigger(() -> false);
 
   private static final LoggedTunableNumber minDistanceTagPoseBlend =
       new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
@@ -272,6 +277,30 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     } else {
       RobotState.setDriveState(DriveState.Driving);
     }
+
+    if (RobotModeTriggers.teleop().getAsBoolean()) {
+      aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
+    } else {
+      aimbotTrigger = new Trigger(() -> false);
+    }
+
+    Logger.recordOutput("Drive/Aimbot Trigger", aimbotTrigger.getAsBoolean());
+
+    // Log odometry
+    Logger.recordOutput("Odometry/Robot", getPose());
+    Logger.recordOutput("Odometry/SingleTagPose", getSingleTagPose());
+    Logger.recordOutput("Odometry/VerificationPose", verificationPose);
+    Logger.recordOutput("Odometry/RawGyroRotation", rawGyroRotation);
+    Logger.recordOutput("Odometry/ClosestHPTag", closestHPTag);
+    if (closestReefTag != null) {
+      Logger.recordOutput("Alignment/ClosestReefTag", closestReefTag.toString());
+    } else {
+      Logger.recordOutput("Alignment/ClosestReefTag", "null");
+    }
+  }
+
+  public Trigger getAimbotTrigger() {
+    return aimbotTrigger;
   }
 
   public Pose2d getClosestHPTagPose() {
