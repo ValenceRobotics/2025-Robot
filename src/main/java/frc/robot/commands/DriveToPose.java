@@ -49,12 +49,12 @@ public class DriveToPose extends Command {
       new LoggedTunableNumber("DriveToPose/FFMaxRadius");
 
   static {
-    drivekP.initDefault(1.8);
-    drivekD.initDefault(0.004);
+    drivekP.initDefault(4.5);
+    drivekD.initDefault(0.0005);
     thetakP.initDefault(3.0);
     thetakD.initDefault(0.0);
-    driveMaxVelocity.initDefault(4.0);
-    driveMaxAcceleration.initDefault(5.0);
+    driveMaxVelocity.initDefault(5.0);
+    driveMaxAcceleration.initDefault(5.5);
     thetaMaxVelocity.initDefault(Units.degreesToRadians(360.0));
     thetaMaxAcceleration.initDefault(8.0);
     driveTolerance.initDefault(0.01);

@@ -75,7 +75,7 @@ public class DriveConstants {
   // Drive motor configuration
   public static final int driveMotorCurrentLimit = 60;
   public static final double wheelRadiusMeters =
-      Units.inchesToMeters(1.6917); // old 1.689, 1.67, 1.647, 1.632
+      Units.inchesToMeters(1.609); // old 1.689, 1.67, 1.647, 1.632
   // -3.39E-3*(matches since start) + 1.67
   public static final double driveMotorReduction =
       (45.0 * 22.0) / (13.0 * 15.0); // MAXSwerve with 13 pinion teeth

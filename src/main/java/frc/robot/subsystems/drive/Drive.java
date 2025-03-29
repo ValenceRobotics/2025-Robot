@@ -44,7 +44,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
@@ -63,6 +62,7 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -103,7 +103,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
 
   ReefTags closestReefTag = null;
 
-  Trigger aimbotTrigger = new Trigger(() -> false);
+  boolean aimbotTrigger = false;
+
+  boolean joysticksActive = false;
 
   private static final LoggedTunableNumber minDistanceTagPoseBlend =
       new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
@@ -279,12 +281,12 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     }
 
     if (RobotModeTriggers.teleop().getAsBoolean()) {
-      aimbotTrigger = new Trigger(() -> RobotState.getSystemMode() == SystemMode.Auto);
+      aimbotTrigger = RobotState.getSystemMode() == SystemMode.Auto;
     } else {
-      aimbotTrigger = new Trigger(() -> false);
+      aimbotTrigger = false;
     }
 
-    Logger.recordOutput("Drive/Aimbot Trigger", aimbotTrigger.getAsBoolean());
+    Logger.recordOutput("Drive/Aimbot Trigger", aimbotTrigger);
 
     // Log odometry
     Logger.recordOutput("Odometry/Robot", getPose());
@@ -299,7 +301,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     }
   }
 
-  public Trigger getAimbotTrigger() {
+  public boolean getAimbotTrigger() {
     return aimbotTrigger;
   }
 
@@ -307,6 +309,13 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     return closestHPTag;
   }
 
+  public void setJoysticsActive(boolean active) {
+    joysticksActive = active;
+  }
+
+  public boolean getJoysticksActive(DoubleSupplier x, DoubleSupplier y) {
+    return (Math.abs(x.getAsDouble()) + Math.abs(y.getAsDouble())) > 0.1;
+  }
   /**
    * Retrieves the array of possible scoring locations on the field.
    *
@@ -377,6 +386,11 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     return scoringLocations;
   }
 
+  @AutoLogOutput(key = "Drive/AimbotTarget")
+  public Pose2d getAimbotTarget() {
+    Pose2d[] reef = findClosestReefTag(getPose());
+    return reef == null ? closestHPTag : getPose().nearest(List.of(closestHPTag, reef[0]));
+  }
   /**
    * Runs the drive at the desired velocity.
    *

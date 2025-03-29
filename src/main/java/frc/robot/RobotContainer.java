@@ -13,7 +13,8 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -21,8 +22,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,14 +40,23 @@ import frc.robot.commands.StateCommands;
 import frc.robot.subsystems.EndEffector.EndEffector;
 import frc.robot.subsystems.EndEffector.EndEffectorIO;
 import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
-import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOSim;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOReal;
 import frc.robot.subsystems.elevator.ElevatorIOSim;
-import frc.robot.subsystems.vision.*;
-import frc.robot.util.FieldConstants;
-
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -190,7 +198,7 @@ public class RobotContainer {
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .andThen(StateCommands.setMechanismState(ElevatorState.Home))
             .andThen(new WaitCommand(0.2))
-            .withTimeout(1.5));
+            .withTimeout(1.4));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
@@ -228,11 +236,21 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
-        DriveCommands.joystickDrive(
-            drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+        Commands.either(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> drive.getAimbotTarget().getRotation()),
+            DriveCommands.joystickDrive(
+                drive,
+                () -> -controller.getLeftY(),
+                () -> -controller.getLeftX(),
+                () -> -controller.getRightX()),
+            () ->
+                drive.getAimbotTrigger()
+                    && drive.getJoysticksActive(
+                        () -> -controller.getLeftY(), () -> -controller.getLeftX())));
 
     controller
         .rightBumper()
@@ -248,21 +266,6 @@ public class RobotContainer {
         .onFalse(
             StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
-
-    // drive
-    //     .getAimbotTrigger()
-    //     .whileTrue(
-    //         DriveCommands.joystickDriveAtAngle(
-    //             drive,
-    //             () -> -controller.getLeftY(),
-    //             () -> -controller.getLeftX(),
-    //             () -> drive
-    //             .getPose()
-    //             .relativeTo(
-    //                 DriverStation.getAlliance().get().equals(Alliance.Blue)
-    //                     ? FieldConstants.Reef.blueReefCenter
-    //                     : FieldConstants.Reef.redReefCenter)
-    //             .getRotation()));
 
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -340,11 +343,8 @@ public class RobotContainer {
     // Figure out button
     controller
         .button(7)
-        .onTrue(
-            StateCommands.setMechanismState(
-                RobotState.getSystemMode() == SystemMode.Manual
-                    ? SystemMode.Auto
-                    : SystemMode.Manual));
+        .whileTrue(StateCommands.setMechanismState(SystemMode.Manual))
+        .onFalse(StateCommands.setMechanismState(SystemMode.Auto));
   }
 
   /**
