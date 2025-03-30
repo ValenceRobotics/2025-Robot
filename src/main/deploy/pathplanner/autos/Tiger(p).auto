@@ -23,9 +23,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "E to HP"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "E to HP"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "retract4"
+                }
+              }
+            ]
           }
         },
         {
@@ -53,9 +66,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "D to HP"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "D to HP"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "retract4"
+                }
+              }
+            ]
           }
         },
         {
