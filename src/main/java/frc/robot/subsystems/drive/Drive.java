@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -317,7 +318,9 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   }
 
   public boolean getJoysticksActive(DoubleSupplier x, DoubleSupplier y) {
-    return (Math.abs(x.getAsDouble()) + Math.abs(y.getAsDouble())) > 0.1;
+    Logger.recordOutput(
+        "Drive/JoysticsActive", Math.abs(x.getAsDouble()) + Math.abs(y.getAsDouble()) > 0.15);
+    return (Math.abs(x.getAsDouble()) + Math.abs(y.getAsDouble())) > 0.15;
   }
   /**
    * Retrieves the array of possible scoring locations on the field.
@@ -581,9 +584,14 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   public double getMaxLinearSpeedMetersPerSec() {
     return maxSpeedMetersPerSec;
   }
-
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return maxSpeedMetersPerSec / driveBaseRadius;
+  }
+
+  public Command doNothing() {
+    Command nothingCommand = new InstantCommand();
+    nothingCommand.addRequirements(this);
+    return nothingCommand;
   }
 }

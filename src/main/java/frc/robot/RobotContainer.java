@@ -196,12 +196,9 @@ public class RobotContainer {
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
-            .andThen(new WaitCommand(0.1))
-            .withTimeout(1.4));
+            .withTimeout(1.2));
     NamedCommands.registerCommand(
-        "retract4",
-        (StateCommands.setMechanismState(ElevatorState.Home))
-                .withTimeout(.5));
+        "retract4", (StateCommands.setMechanismState(ElevatorState.Home)).withTimeout(.5));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
@@ -239,21 +236,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
-        Commands.either(
-            DriveCommands.joystickDriveAtAngle(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> drive.getAimbotTarget().getRotation()),
-            DriveCommands.joystickDrive(
-                drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
-                () -> -controller.getRightX()),
-            () ->
-                drive.getAimbotTrigger()
-                    && drive.getJoysticksActive(
-                        () -> -controller.getLeftY(), () -> -controller.getLeftX())));
+        DriveCommands.joystickDrive(
+            drive,
+            () -> -controller.getLeftY(),
+            () -> -controller.getLeftX(),
+            () -> -controller.getRightX()));
 
     controller
         .rightBumper()
@@ -346,8 +333,11 @@ public class RobotContainer {
     // Figure out button
     controller
         .button(7)
-        .whileTrue(StateCommands.setMechanismState(SystemMode.Manual))
-        .onFalse(StateCommands.setMechanismState(SystemMode.Auto));
+        .onTrue(
+            Commands.either(
+                StateCommands.setMechanismState(SystemMode.Auto),
+                StateCommands.setMechanismState(SystemMode.Manual),
+                () -> RobotState.getSystemMode() == SystemMode.Manual));
   }
 
   /**

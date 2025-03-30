@@ -29,6 +29,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private LoggedTunableNumber currentSpike =
       new LoggedTunableNumber("EndEffector/current spike", 15);
   private LoggedTunableNumber spikeTime = new LoggedTunableNumber("EndEffector/spike time", 0.1);
+  private LoggedTunableNumber l1LeftSpeed = new LoggedTunableNumber("EndEffector/L1Left", 4);
+  private LoggedTunableNumber l1RightSpeed = new LoggedTunableNumber("EndEffector/L1Right", -1);
 
   double highCurrentStartTime = 0;
 
@@ -109,8 +111,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
         break;
       case Score:
         if (RobotState.getCurrentElevatorState() == ElevatorState.L1) {
-          leftMotor.setVoltage(3);
-          rightMotor.setVoltage(-0.5);
+          leftMotor.setVoltage(l1LeftSpeed.get());
+          rightMotor.setVoltage(l1RightSpeed.get());
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
             || RobotState.getCurrentElevatorState() == ElevatorState.L3

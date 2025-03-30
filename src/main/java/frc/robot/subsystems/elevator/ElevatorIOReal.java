@@ -32,7 +32,7 @@ public class ElevatorIOReal implements ElevatorIO {
   private LoggedTunableNumber l4Position = new LoggedTunableNumber("Elevator/L4Position", 31.8);
   private LoggedTunableNumber l4ScorePosition =
       new LoggedTunableNumber("Elevator/L4ScorePosition", 32.5);
-  private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 6);
+  private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 4.5);
   private LoggedTunableNumber l2Position = new LoggedTunableNumber("Elevator/L2Position", 10);
   private LoggedTunableNumber l3Position = new LoggedTunableNumber("Elevator/L3Position", 18.3);
 
