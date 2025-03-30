@@ -54,11 +54,6 @@ public class Vision extends SubsystemBase {
   private final Alert[] disconnectedAlerts;
   private final Supplier<Pose2d> poseSupplier;
 
-  // private static final LoggedTunableNumber minDistanceTagPoseBlend =
-  //     new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
-  // private static final LoggedTunableNumber maxDistanceTagPoseBlend =
-  //     new LoggedTunableNumber("RobotState/MaxDistanceTagPoseBlend", Units.inchesToMeters(36.0));
-
   private final Map<Integer, TxTyPoseRecord> txTyPoses = new HashMap<>();
 
   public Vision(VisionConsumer consumer, Supplier<Pose2d> poseSupplier, VisionIO... io) {
@@ -241,10 +236,6 @@ public class Vision extends SubsystemBase {
         allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
     Logger.recordOutput("Vision/SingleTagMap", txTyPoses.toString());
-
-    // Log single tag pose
-    // Logger.recordOutput("Vision/Single Tag Pose 1", getSingleTagPose(0));
-    // Logger.recordOutput("Vision/Single Tag Pose 2", getSingleTagPose(1));
   }
 
   // @FunctionalInterface
@@ -256,91 +247,6 @@ public class Vision extends SubsystemBase {
 
     void acceptSingleTag(Pose2d visionRobotPoseMeters, double timestampSeconds);
   }
-  // public Pose2d getSingleTagPose(int cameraIndex) {
-  //   SingleTagPoseObservation observation = inputs[cameraIndex].singleTagPoseObservations;
-  //   TargetObservation target = inputs[cameraIndex].latestTargetObservation;
-
-  //   double tx = target.tx().getRadians();
-  //   double ty = target.ty().getRadians();
-  //   Transform3d cameraPose = robotToCamera[cameraIndex];
-
-  //   Translation2d camToTagTranslation =
-  //       new Pose3d(Translation3d.kZero, new Rotation3d(0, -ty, -tx))
-  //           .transformBy(
-  //               new Transform3d(
-  //                   new Translation3d(observation.tagDistance(), 0, 0), Rotation3d.kZero))
-  //           .getTranslation()
-  //           .rotateBy(new Rotation3d(0, cameraPose.getRotation().getY(), 0))
-  //           .toTranslation2d();
-
-  //   Rotation2d camToTagRotation =
-  //       poseSupplier
-  //           .get()
-  //           .getRotation()
-  //           .plus(
-  //               Rotation2d.fromRadians(cameraPose.getRotation().getZ())
-  //                   .plus(camToTagTranslation.getAngle()));
-
-  //   var optionalTagPose = VisionConstants.aprilTagLayout.getTagPose(observation.tagId());
-  //   if (optionalTagPose.isEmpty()) {
-  //     return new Pose2d(); // or handle the case appropriately
-  //   }
-  //   Pose2d tagPose2d = optionalTagPose.get().toPose2d();
-
-  //   Translation2d fieldToCameraTranslation =
-  //       new Pose2d(tagPose2d.getTranslation(), camToTagRotation.plus(Rotation2d.kPi))
-  //           .transformBy(GeomUtil.toTransform2d(camToTagTranslation.getNorm(), 0.0))
-  //           .getTranslation();
-
-  //   Pose2d robotPose =
-  //       new Pose2d(
-  //               fieldToCameraTranslation,
-  //               poseSupplier
-  //                   .get()
-  //                   .getRotation()
-  //                   .plus(Rotation2d.fromRadians(cameraPose.getRotation().getZ())))
-  //           .transformBy(
-  //               new Transform2d(
-  //                   new Pose3d(cameraPose.getTranslation(), cameraPose.getRotation()).toPose2d(),
-  //                   Pose2d.kZero));
-
-  //   robotPose = new Pose2d(robotPose.getTranslation(), poseSupplier.get().getRotation());
-
-  //   return robotPose;
-  // }
-
-  // /**
-  //  * Calculates a blended pose between the robot's estimated pose and a single tag based pose.
-  //  *
-  //  * @param camIndex The index of the camera to get the tag pose from
-  //  * @param finalPose The final destination pose used to calculate blending factor
-  //  * @return A blended Pose2d between estimated and tag-based poses based on distance to final
-  // pose:
-  //  *     - Returns estimated pose if no tag is visible - Interpolates between tag pose and
-  // estimated
-  //  *     pose based on distance: - More weight on tag pose when closer to minDistanceTagPoseBlend
-  // -
-  //  *     More weight on estimated pose when closer to maxDistanceTagPoseBlend
-  //  */
-  // public Pose2d getReefPose(int camIndex, Pose2d finalPose) {
-  //   var tagPose = getSingleTagPose(camIndex);
-  //   // Use estimated pose if tag pose is not present
-  //   if (tagPose.equals(new Pose2d())) {
-  //     RobotState.setSingleTagMode(SingleTagMode.NotAvailable);
-  //     return poseSupplier.get();
-  //   }
-
-  //   RobotState.setSingleTagMode(SingleTagMode.Available);
-  //   // Use distance from estimated pose to final pose to get t value
-  //   final double t =
-  //       MathUtil.clamp(
-  //           (poseSupplier.get().getTranslation().getDistance(finalPose.getTranslation())
-  //                   - minDistanceTagPoseBlend.get())
-  //               / (maxDistanceTagPoseBlend.get() - minDistanceTagPoseBlend.get()),
-  //           0.0,
-  //           1.0);
-  //   return poseSupplier.get().interpolate(tagPose, 1.0 - t);
-  // }
 
   /**
    * Processes and adds a single AprilTag observation to the vision system.

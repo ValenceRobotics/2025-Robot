@@ -143,7 +143,7 @@ public class FieldConstants {
             .getTagPose(18)
             .get()
             .toPose2d()
-            .plus(new Transform2d(Units.inchesToMeters(32.5), 0, new Rotation2d()));
+            .plus(new Transform2d(Units.inchesToMeters(-32.5), 0, new Rotation2d()));
 
     public static Pose2d redReefCenter =
         aprilTagLayout

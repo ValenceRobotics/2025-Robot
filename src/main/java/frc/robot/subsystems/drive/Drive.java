@@ -29,6 +29,7 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -56,6 +57,8 @@ import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
 import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.util.AllianceFlipUtil;
+import frc.robot.util.FieldConstants;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.LoggedTunableNumber;
 import java.util.List;
@@ -386,10 +389,16 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     return scoringLocations;
   }
 
-  @AutoLogOutput(key = "Drive/AimbotTarget")
+  @AutoLogOutput(key = "Drive/AimbotTarget") // return as pose2d for easy logging/debugging
   public Pose2d getAimbotTarget() {
-    Pose2d[] reef = findClosestReefTag(getPose());
-    return reef == null ? closestHPTag : getPose().nearest(List.of(closestHPTag, reef[0]));
+    Translation2d currentPose = new Translation2d(getPose().getX(), getPose().getY());
+    Translation2d reefCenter = AllianceFlipUtil.apply(FieldConstants.Reef.center);
+    Rotation2d targetAngle = reefCenter.minus(currentPose).getAngle();
+    if (getPose().minus(getClosestHPTagPose()).getTranslation().getNorm() <= 2.0) {
+      return getClosestHPTagPose();
+    } else {
+      return new Pose2d(getPose().getX(), getPose().getY(), targetAngle);
+    }
   }
   /**
    * Runs the drive at the desired velocity.
