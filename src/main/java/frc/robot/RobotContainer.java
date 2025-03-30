@@ -196,9 +196,12 @@ public class RobotContainer {
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
-            .andThen(StateCommands.setMechanismState(ElevatorState.Home))
-            .andThen(new WaitCommand(0.2))
+            .andThen(new WaitCommand(0.1))
             .withTimeout(1.4));
+    NamedCommands.registerCommand(
+        "retract4",
+        (StateCommands.setMechanismState(ElevatorState.Home))
+                .withTimeout(.5));
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake)
