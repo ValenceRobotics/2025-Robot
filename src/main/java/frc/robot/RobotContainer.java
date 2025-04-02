@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
+import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.RobotState.SystemMode;
@@ -192,7 +193,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4Force))
-            .andThen(new WaitCommand(1))
+            .andThen(
+                new WaitUntilCommand(
+                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
@@ -201,10 +204,12 @@ public class RobotContainer {
         "retract4", (StateCommands.setMechanismState(ElevatorState.Home)).withTimeout(.5));
     NamedCommands.registerCommand(
         "getCoralHp",
-        (StateCommands.setMechanismState(EndEffectorState.Intake)
-                .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
+        (StateCommands.setMechanismState(EndEffectorState.Intake))
             .andThen(
-                new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.HasCoral)));
+                new WaitUntilCommand(
+                    () ->
+                        RobotState.getCoralState() == CoralState.HasCoral
+                            || RobotState.getCoralState() == CoralState.CoralTouchedIntake)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
@@ -250,9 +255,7 @@ public class RobotContainer {
                     () -> -controller.getLeftY(),
                     () -> -controller.getLeftX(),
                     () -> drive.getClosestHPTagPose().getRotation())
-                .alongWith(
-                    StateCommands.setMechanismState(EndEffectorState.Intake)
-                        .alongWith(StateCommands.setMechanismState(ElevatorState.Intake))))
+                .alongWith(StateCommands.setMechanismState(EndEffectorState.Intake)))
         .onFalse(
             StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
@@ -318,8 +321,7 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(
             Commands.runOnce(
-                    () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector)
-                .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
+                () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector))
         .onFalse(
             Commands.runOnce(
                     () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector)

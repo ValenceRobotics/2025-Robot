@@ -43,7 +43,6 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -264,15 +263,6 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     } else {
       verificationPose = getSingleTagPose();
     }
-
-    // if ((Math.abs(verificationPose.getX() - getScoreLocations()[0].getX()) <= 0.01)
-    //         && ((Math.abs(verificationPose.getY() - getScoreLocations()[0].getY()) <= 0.01))
-    //     || (Math.abs(verificationPose.getX() - getScoreLocations()[1].getX()) <= 0.01)
-    //         && ((Math.abs(verificationPose.getY() - getScoreLocations()[1].getY()) <= 0.01))) {
-    //   RobotState.setDriveState(DriveState.Aligned);
-    // } else {
-    //   RobotState.setDriveState(DriveState.Driving);
-    // }
 
     if (verificationPose.minus(getScoreLocations()[0]).getTranslation().getNorm() <= 0.015
         || verificationPose.minus(getScoreLocations()[1]).getTranslation().getNorm() <= 0.015) {
@@ -587,11 +577,5 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   /** Returns the maximum angular speed in radians per sec. */
   public double getMaxAngularSpeedRadPerSec() {
     return maxSpeedMetersPerSec / driveBaseRadius;
-  }
-
-  public Command doNothing() {
-    Command nothingCommand = new InstantCommand();
-    nothingCommand.addRequirements(this);
-    return nothingCommand;
   }
 }

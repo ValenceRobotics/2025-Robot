@@ -55,7 +55,7 @@ public class VisionConstants {
       new Transform3d(
           Units.inchesToMeters(12.467),
           Units.inchesToMeters(-6.614),
-          Units.inchesToMeters(9.848),
+          Units.inchesToMeters(10.348),
           new Rotation3d(0.0, Units.degreesToRadians(-5), Units.degreesToRadians(60)));
   public static Transform3d robotToCamera2 =
       new Transform3d(

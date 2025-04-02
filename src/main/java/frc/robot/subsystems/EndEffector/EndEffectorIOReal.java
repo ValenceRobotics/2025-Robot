@@ -32,7 +32,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private LoggedTunableNumber l1LeftSpeed = new LoggedTunableNumber("EndEffector/L1Left", 4);
   private LoggedTunableNumber l1RightSpeed = new LoggedTunableNumber("EndEffector/L1Right", -1);
 
+  private LoggedTunableNumber jamCurrentSpike =
+      new LoggedTunableNumber("EndEffector/jam current spike", 30);
+  private LoggedTunableNumber jamTime = new LoggedTunableNumber("EndEffector/jam time", 0.5);
+
   double highCurrentStartTime = 0;
+  double jamCurrentStartTime = 0;
 
   public EndEffectorIOReal() {
 
@@ -67,9 +72,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     Logger.recordOutput("EndEffector/Proximity", canRange.getDistance().getValueAsDouble());
     Logger.recordOutput("EndEffector/Proximity Sensor Connected", canRange.isConnected());
-    // Logger.recordOutput("EndEffector/CanandColor Digout Value",
-    // canandcolor.digout1().getValue());
 
+    // current limit sensing if canrange disconnected
     if (!canRange.isConnected()) {
       if (leftMotor.getOutputCurrent() >= currentSpike.get()
           || rightMotor.getOutputCurrent() >= currentSpike.get()
@@ -88,6 +92,20 @@ public class EndEffectorIOReal implements EndEffectorIO {
     } else {
       if (canRange.getDistance().getValueAsDouble() <= 0.06) {
         RobotState.setCoralState(CoralState.HasCoral);
+      } else if (leftMotor.getOutputCurrent() >= currentSpike.get()
+          || rightMotor.getOutputCurrent() >= currentSpike.get()
+              && RobotState.getEndEffectorState() == EndEffectorState.Intake) {
+        Logger.recordOutput("EndEffector/Current Spike Active", true);
+        if (highCurrentStartTime == 0) {
+          highCurrentStartTime = Timer.getFPGATimestamp();
+        } else if (Timer.getFPGATimestamp() - highCurrentStartTime >= spikeTime.get()) {
+          if (RobotState.getCoralState() != CoralState.HasCoral) {
+            RobotState.setCoralState(CoralState.CoralTouchedIntake);
+          }
+        } else {
+          highCurrentStartTime = 0;
+          Logger.recordOutput("EndEffector/Current Spike Active", false);
+        }
       } else {
         RobotState.setCoralState(CoralState.NoCoral);
       }
@@ -103,11 +121,37 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     switch (RobotState.getEndEffectorState()) {
       case Intake:
-        if (RobotState.getCoralState() == CoralState.NoCoral) {
+        if (RobotState.getCoralState() == CoralState.NoCoral
+            || RobotState.getCoralState() == CoralState.CoralTouchedIntake) {
           setVoltage(4.0);
         } else {
           setEndEffectorState(EndEffectorState.Stopped);
+          stop();
         }
+
+        // if intake jams, reverse until no current spike, then go back to intake
+        if (leftMotor.getOutputCurrent() >= jamCurrentSpike.get()
+            || rightMotor.getOutputCurrent() >= jamCurrentSpike.get()) {
+          Logger.recordOutput("EndEffector/Jam Current Spike Active", true);
+          if (jamCurrentStartTime == 0) {
+            jamCurrentStartTime = Timer.getFPGATimestamp();
+          } else if (Timer.getFPGATimestamp() - jamCurrentStartTime >= jamTime.get()) {
+            RobotState.setEndEffectorState(EndEffectorState.Reverse);
+          }
+        } else {
+          jamCurrentStartTime = 0;
+          RobotState.setEndEffectorState(EndEffectorState.Intake);
+          Logger.recordOutput("EndEffector/Jam Current Spike Active", false);
+        }
+
+        Logger.recordOutput(
+            "EndEffector/Jam Current Spike Time",
+            leftMotor.getOutputCurrent() >= jamCurrentSpike.get()
+                    || rightMotor.getOutputCurrent() >= jamCurrentSpike.get()
+                        && RobotState.getEndEffectorState() == EndEffectorState.Intake
+                ? Timer.getFPGATimestamp() - jamCurrentStartTime
+                : jamCurrentStartTime);
+
         break;
       case Score:
         if (RobotState.getCurrentElevatorState() == ElevatorState.L1) {

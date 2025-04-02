@@ -168,7 +168,6 @@ public class ElevatorIOReal implements ElevatorIO {
   @Override
   public void seekPosition(double position) {
     double ff = ElevatorConstants.kGReal.get();
-    // + ElevatorConstants.kVReal * (elevatorMaster.getEncoder().getVelocity() / 60);
     elevatorController.setReference(position, ControlType.kPosition, ClosedLoopSlot.kSlot0, ff);
     Logger.recordOutput("Elevator/Setpoint", position);
   }

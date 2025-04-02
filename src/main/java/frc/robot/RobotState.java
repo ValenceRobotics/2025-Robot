@@ -45,6 +45,7 @@ public class RobotState {
 
   public enum CoralState {
     HasCoral,
+    CoralTouchedIntake,
     NoCoral
   }
 
