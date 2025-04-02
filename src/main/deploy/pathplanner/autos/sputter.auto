@@ -13,7 +13,13 @@
         {
           "type": "named",
           "data": {
-            "name": "autoScore1"
+            "name": "autoAlignRight"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoScore4"
           }
         }
       ]
