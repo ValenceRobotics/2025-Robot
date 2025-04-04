@@ -35,6 +35,13 @@ public class ElevatorIOReal implements ElevatorIO {
   private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 4.5);
   private LoggedTunableNumber l2Position = new LoggedTunableNumber("Elevator/L2Position", 10);
   private LoggedTunableNumber l3Position = new LoggedTunableNumber("Elevator/L3Position", 18.3);
+  private LoggedTunableNumber bargeReleasePoint =
+      new LoggedTunableNumber("Elevator/Barge Release", 25.0);
+
+  private LoggedTunableNumber lowAlgaeDescore =
+      new LoggedTunableNumber("Elevator/Low Algae Descore", 18);
+  private LoggedTunableNumber highAlgaeDescore =
+      new LoggedTunableNumber("Elevator/HighAlgaeDescore", 25);
 
   public ElevatorIOReal() {
 
@@ -105,7 +112,7 @@ public class ElevatorIOReal implements ElevatorIO {
         }
         break;
       case Intake:
-        seekPosition(0.5);
+        RobotState.setQueuedElevatorState(ElevatorState.Home);
         break;
       case L1:
         seekPosition(l1Position.get());
@@ -118,18 +125,31 @@ public class ElevatorIOReal implements ElevatorIO {
         break;
       case L4:
         seekPosition(l4Position.get());
+        if (MathUtil.isNear(31.3, elevatorMaster.getEncoder().getPosition(), 0.1)) {
+          atSetpoint = true;
+        } else {
+          atSetpoint = false;
+        }
         break;
       case L4Score:
         seekPosition(l4ScorePosition.get());
         break;
       case L4Force:
         seekPosition(l4Position.get());
-        if (MathUtil.isNear(31.3, elevatorMaster.getEncoder().getPosition(), 0.2)
-            && (Math.abs(elevatorMaster.getEncoder().getVelocity()) <= 0.05)) {
+        if (MathUtil.isNear(31.3, elevatorMaster.getEncoder().getPosition(), 0.1)) {
           atSetpoint = true;
         } else {
           atSetpoint = false;
         }
+        break;
+      case AlgaeDescoreCheck:
+        determineHighOrLowAlgae();
+        break;
+      case LowAlgaeDescore:
+        seekPosition(lowAlgaeDescore.get());
+        break;
+      case HighAlgaeDescore:
+        seekPosition(highAlgaeDescore.get());
         break;
       case testing:
         seekPosition(SmartDashboard.getNumber("hi", 0));
@@ -150,6 +170,7 @@ public class ElevatorIOReal implements ElevatorIO {
     inputs.currentAmps = new double[] {elevatorMaster.getOutputCurrent()};
     inputs.state = RobotState.getCurrentElevatorState();
     inputs.limitSwitch = getLimitSwitchState();
+    inputs.aboveBargeRelease = elevatorMaster.getEncoder().getPosition() >= bargeReleasePoint.get();
   }
 
   public boolean getLimitSwitchState() {
@@ -158,6 +179,20 @@ public class ElevatorIOReal implements ElevatorIO {
 
   public boolean atSetpoint() {
     return atSetpoint;
+  }
+
+  public void determineHighOrLowAlgae() {
+    int tagId = RobotState.getCurrentTag().getId();
+    if (tagId == 17 || tagId == 19 || tagId == 21 || tagId == 6 || tagId == 8 || tagId == 10) {
+      RobotState.setQueuedElevatorState(ElevatorState.LowAlgaeDescore);
+    } else if (tagId == 18
+        || tagId == 20
+        || tagId == 22
+        || tagId == 7
+        || tagId == 9
+        || tagId == 11) {
+      RobotState.setQueuedElevatorState(ElevatorState.HighAlgaeDescore);
+    }
   }
 
   @Override

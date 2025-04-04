@@ -54,4 +54,8 @@ public class Elevator extends SubsystemBase {
   public boolean getLimitSwitch() {
     return inputs.limitSwitch;
   }
+
+  public boolean aboveBargeRelease() {
+    return inputs.aboveBargeRelease;
+  }
 }

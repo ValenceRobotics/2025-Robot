@@ -1,7 +1,10 @@
 package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTag;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import frc.robot.subsystems.drive.DriveConstants;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -19,7 +22,10 @@ public class RobotState {
     L4,
     L4Score,
     L4Force,
-    testing
+    testing,
+    AlgaeDescoreCheck,
+    LowAlgaeDescore,
+    HighAlgaeDescore
   }
 
   public enum SingleTagMode {
@@ -56,9 +62,20 @@ public class RobotState {
     Reverse
   }
 
+  public enum AlgaeState {
+    Stow,
+    Intake,
+    Shoot
+  }
+
   public enum SystemMode {
     Manual,
     Auto
+  }
+
+  public enum AimbotMode {
+    NoAimbot,
+    Aimbot
   }
 
   // Private state tracking
@@ -72,10 +89,30 @@ public class RobotState {
   private SystemMode systemMode = SystemMode.Auto;
   private SingleTagMode singleTagMode = SingleTagMode.NotAvailable;
   private AlignState alignState = AlignState.NotInAlignRange;
+  private AlgaeState algaeState = AlgaeState.Stow;
+  private AimbotMode aimbotMode = AimbotMode.Aimbot;
 
   // Singleton accessor
   public static RobotState getInstance() {
     return instance;
+  }
+
+  public static void setAimbotMode(AimbotMode mode) {
+    instance.aimbotMode = mode;
+    Logger.recordOutput("RobotState/Aimbot Mode", mode.toString());
+  }
+
+  public static AimbotMode getAimbotMode() {
+    return instance.aimbotMode;
+  }
+
+  public static void setAlgaeState(AlgaeState state) {
+    instance.algaeState = state;
+    Logger.recordOutput("RobotState/AlgaeState", state.toString());
+  }
+
+  public static AlgaeState getAlgaeState() {
+    return instance.algaeState;
   }
 
   public static void setAlignState(AlignState state) {
@@ -189,9 +226,10 @@ public class RobotState {
           || instance.queuedElevatorState == ElevatorState.L4Force
           || instance.queuedElevatorState == ElevatorState.Intake) {
         return true; // Home state has no requirements, force override in l4 auto
+      } else {
+        return instance.driveState == DriveState.Aligned
+            && instance.coralState == CoralState.HasCoral;
       }
-      return instance.driveState == DriveState.Aligned
-          && instance.coralState == CoralState.HasCoral;
     } else {
       return true;
     }
@@ -229,6 +267,21 @@ public class RobotState {
         }
       }
       return NONE;
+    }
+
+    public Pose2d getPose() {
+      if (this == NONE) {
+        return new Pose2d();
+      }
+      return DriveConstants.aprilTagLayout
+          .getTagPose(this.id)
+          .get()
+          .toPose2d()
+          .plus(
+              new Transform2d(
+                  DriveConstants.trackWidth / 2 + DriveConstants.bumperThickness,
+                  0,
+                  new Rotation2d(Math.PI)));
     }
   }
 

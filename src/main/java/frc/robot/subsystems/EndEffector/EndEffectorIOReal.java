@@ -29,6 +29,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
   private LoggedTunableNumber currentSpike =
       new LoggedTunableNumber("EndEffector/current spike", 15);
   private LoggedTunableNumber spikeTime = new LoggedTunableNumber("EndEffector/spike time", 0.1);
+  private LoggedTunableNumber intakeTouchTime =
+      new LoggedTunableNumber("EndEffector/intake touch time", 0.2);
   private LoggedTunableNumber l1LeftSpeed = new LoggedTunableNumber("EndEffector/L1Left", 4);
   private LoggedTunableNumber l1RightSpeed = new LoggedTunableNumber("EndEffector/L1Right", -1);
 
@@ -98,7 +100,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         Logger.recordOutput("EndEffector/Current Spike Active", true);
         if (highCurrentStartTime == 0) {
           highCurrentStartTime = Timer.getFPGATimestamp();
-        } else if (Timer.getFPGATimestamp() - highCurrentStartTime >= spikeTime.get()) {
+        } else if (Timer.getFPGATimestamp() - highCurrentStartTime >= intakeTouchTime.get()) {
           if (RobotState.getCoralState() != CoralState.HasCoral) {
             RobotState.setCoralState(CoralState.CoralTouchedIntake);
           }
@@ -169,7 +171,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         }
         break;
       case Reverse:
-        setVoltage(-1.5);
+        setVoltage(-1.25);
         break;
       case Stopped:
         stop();

@@ -15,6 +15,7 @@ public interface ElevatorIO {
     public double[] currentAmps = new double[] {};
     public ElevatorState state = ElevatorState.Home;
     public boolean limitSwitch = false;
+    public boolean aboveBargeRelease = false;
   }
 
   public default void updateInputs(ElevatorIOInputs inputs) {}

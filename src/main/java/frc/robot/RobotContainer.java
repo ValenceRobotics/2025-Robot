@@ -30,9 +30,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.RobotState.AimbotMode;
 import frc.robot.RobotState.CoralState;
 import frc.robot.RobotState.DriveState;
-import frc.robot.RobotState.ElevatorSetpoint;
 import frc.robot.RobotState.ElevatorState;
 import frc.robot.RobotState.EndEffectorState;
 import frc.robot.RobotState.SystemMode;
@@ -73,6 +73,7 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  // private final Algae algae;
   public final Elevator elevator;
   private final EndEffector endEffector;
   private SwerveDriveSimulation driveSimulation = null;
@@ -110,6 +111,7 @@ public class RobotContainer {
                     VisionConstants.camera2Name, VisionConstants.robotToCamera2));
         this.elevator = new Elevator(new ElevatorIOReal());
         this.endEffector = new EndEffector(new EndEffectorIOReal());
+        //  this.algae = new Algae(new AlgaeIOReal());
         break;
       case SIM:
         // create a maple-sim swerve drive simulation instance
@@ -147,6 +149,7 @@ public class RobotContainer {
                     driveSimulation::getSimulatedDriveTrainPose));
         elevator = new Elevator(new ElevatorIOSim());
         endEffector = new EndEffector(new EndEffectorIO() {});
+        //  algae = new Algae(new AlgaeIO() {});
         break;
       default:
         // Replayed robot, disable IO implementations
@@ -161,7 +164,7 @@ public class RobotContainer {
         vision = new Vision(drive, drive::getPose, new VisionIO() {}, new VisionIO() {});
         elevator = new Elevator(new ElevatorIO() {});
         endEffector = new EndEffector(new EndEffectorIO() {});
-
+        //  algae = new Algae(new AlgaeIO() {});
         break;
     }
     // named commands declaration
@@ -194,9 +197,8 @@ public class RobotContainer {
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4Force))
             .andThen(
-                new WaitUntilCommand(
-                    () -> RobotState.getElevatorSetpoint() == ElevatorSetpoint.AtSetpoint))
-            .andThen(StateCommands.setMechanismState(EndEffectorState.Score))
+                new WaitCommand(0.8)
+                    .andThen(StateCommands.setMechanismState(EndEffectorState.Score)))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
             .withTimeout(1.2));
@@ -205,11 +207,9 @@ public class RobotContainer {
     NamedCommands.registerCommand(
         "getCoralHp",
         (StateCommands.setMechanismState(EndEffectorState.Intake))
+            .alongWith(StateCommands.setMechanismState(ElevatorState.Intake))
             .andThen(
-                new WaitUntilCommand(
-                    () ->
-                        RobotState.getCoralState() == CoralState.HasCoral
-                            || RobotState.getCoralState() == CoralState.CoralTouchedIntake)));
+                new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.HasCoral)));
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
     // Set up SysId routines
@@ -247,18 +247,8 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    controller
-        .rightBumper()
-        .whileTrue(
-            DriveCommands.joystickDriveAtAngle(
-                    drive,
-                    () -> -controller.getLeftY(),
-                    () -> -controller.getLeftX(),
-                    () -> drive.getClosestHPTagPose().getRotation())
-                .alongWith(StateCommands.setMechanismState(EndEffectorState.Intake)))
-        .onFalse(
-            StateCommands.setMechanismState(EndEffectorState.Stopped)
-                .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
+    // algae.setDefaultCommand(
+    //     Commands.run(() -> algae.setPivotVoltage(-12 * operatorController.getLeftY()), algae));
 
     // Switch to X pattern when X button is pressed
     // controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -275,6 +265,16 @@ public class RobotContainer {
                 drive.resetOdometry(
                     new Pose2d(drive.getPose().getTranslation(), new Rotation2d())); // zero gyro
     controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
+
+    // operatorController
+    //     .leftTrigger()
+    //     .whileTrue(Commands.run(() -> algae.setShooterVoltage(3)))
+    //     .onFalse(Commands.run(() -> algae.setShooterVoltage(0)));
+
+    // operatorController
+    //     .rightTrigger()
+    //     .whileTrue(Commands.run(() -> algae.setShooterVoltage(-3)))
+    //     .onFalse(Commands.run(() -> algae.setShooterVoltage(0)));
 
     // temporary elevator commands
     controller.a().onTrue(StateCommands.setMechanismState(ElevatorState.L1));
@@ -299,7 +299,6 @@ public class RobotContainer {
                 drive,
                 () -> drive.getScoreLocations()[0],
                 () -> drive.getReefPose(drive.getScoreLocations()[0])));
-
     controller
         .povRight()
         .or(controller.pov(45))
@@ -320,11 +319,10 @@ public class RobotContainer {
     controller
         .rightTrigger()
         .whileTrue(
-            Commands.runOnce(
-                () -> endEffector.setEndEffectorState(EndEffectorState.Intake), endEffector))
+            StateCommands.setMechanismState(EndEffectorState.Intake)
+                .alongWith(StateCommands.setMechanismState(ElevatorState.Intake)))
         .onFalse(
-            Commands.runOnce(
-                    () -> endEffector.setEndEffectorState(EndEffectorState.Stopped), endEffector)
+            StateCommands.setMechanismState(EndEffectorState.Stopped)
                 .alongWith(StateCommands.setMechanismState(ElevatorState.Home)));
 
     controller
@@ -332,7 +330,17 @@ public class RobotContainer {
         .whileTrue(StateCommands.setMechanismState(EndEffectorState.Reverse))
         .onFalse(StateCommands.setMechanismState(EndEffectorState.Stopped));
 
-    // Figure out button
+    // controller
+    //     .rightBumper()
+    //     .whileTrue(
+    //         new DriveToPose(drive, () -> drive.getBargeShotPose())
+    //             .andThen(StateCommands.setMechanismState(ElevatorState.L4Force))
+    //             .andThen(new WaitUntilCommand(() -> elevator.aboveBargeRelease()))
+    //             .andThen(StateCommands.setMechanismState(AlgaeState.Shoot)))
+    //     .onFalse(
+    //         StateCommands.setMechanismState(ElevatorState.Home)
+    //             .alongWith(StateCommands.setMechanismState(AlgaeState.Stow)));
+
     controller
         .button(7)
         .onTrue(
@@ -340,6 +348,15 @@ public class RobotContainer {
                 StateCommands.setMechanismState(SystemMode.Auto),
                 StateCommands.setMechanismState(SystemMode.Manual),
                 () -> RobotState.getSystemMode() == SystemMode.Manual));
+
+    // Figure out button
+    controller
+        .button(9)
+        .onTrue(
+            Commands.either(
+                StateCommands.setMechanismState(AimbotMode.Aimbot),
+                StateCommands.setMechanismState(AimbotMode.NoAimbot),
+                () -> RobotState.getAimbotMode() == AimbotMode.NoAimbot));
   }
 
   /**

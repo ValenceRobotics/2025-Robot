@@ -49,10 +49,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
 import frc.robot.Constants.Mode;
 import frc.robot.RobotState;
+import frc.robot.RobotState.AimbotMode;
 import frc.robot.RobotState.AlignState;
 import frc.robot.RobotState.DriveState;
 import frc.robot.RobotState.SingleTagMode;
-import frc.robot.RobotState.SystemMode;
 import frc.robot.subsystems.drive.DriveConstants.CoralScoreLocation;
 import frc.robot.subsystems.drive.DriveConstants.HPTags;
 import frc.robot.subsystems.drive.DriveConstants.ReefTags;
@@ -109,6 +109,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
   boolean aimbotTrigger = false;
 
   boolean joysticksActive = false;
+
+  Pose2d bargeShotPose = new Pose2d();
 
   private static final LoggedTunableNumber minDistanceTagPoseBlend =
       new LoggedTunableNumber("RobotState/MinDistanceTagPoseBlend", Units.inchesToMeters(24.0));
@@ -275,7 +277,7 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     }
 
     if (RobotModeTriggers.teleop().getAsBoolean()) {
-      aimbotTrigger = RobotState.getSystemMode() == SystemMode.Auto;
+      aimbotTrigger = RobotState.getAimbotMode() == AimbotMode.Aimbot;
     } else {
       aimbotTrigger = false;
     }
@@ -293,10 +295,20 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
     } else {
       Logger.recordOutput("Alignment/ClosestReefTag", "null");
     }
+    Logger.recordOutput("Alignment/BargeShotPose", bargeShotPose);
   }
 
   public boolean getAimbotTrigger() {
     return aimbotTrigger;
+  }
+
+  public Pose2d getBargeShotPose() {
+    bargeShotPose =
+        new Pose2d(
+            AllianceFlipUtil.applyX(FieldConstants.startingLineX),
+            getPose().getY(),
+            AllianceFlipUtil.apply(new Rotation2d()));
+    return bargeShotPose;
   }
 
   public Pose2d getClosestHPTagPose() {

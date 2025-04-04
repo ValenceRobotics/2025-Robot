@@ -21,6 +21,10 @@ public class StateCommands {
               RobotState.setEndEffectorState((EndEffectorState) state);
             } else if (state instanceof SystemMode) {
               RobotState.setSystemMode((SystemMode) state);
+            } else if (state instanceof AimbotMode) {
+              RobotState.setAimbotMode((AimbotMode) state);
+            } else if (state instanceof AlgaeState) {
+              RobotState.setAlgaeState((AlgaeState) state);
             }
           }
         });
