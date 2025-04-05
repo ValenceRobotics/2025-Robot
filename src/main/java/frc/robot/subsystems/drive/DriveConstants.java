@@ -52,6 +52,7 @@ public class DriveConstants {
   public static final double bumperThickness = Units.inchesToMeters(4);
 
   public static final double endEffectorOffset = Units.inchesToMeters(0);
+  public static final double rightAlignOffset = 0.02;
 
   // Zeroed rotation values for each module, see setup instructions
   public static final Rotation2d frontLeftZeroRotation = new Rotation2d(0.0);
@@ -231,7 +232,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     C(
         aprilTagLayout
@@ -251,7 +252,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     E(
         aprilTagLayout
@@ -271,7 +272,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     G(
         aprilTagLayout
@@ -291,7 +292,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     I(
         aprilTagLayout
@@ -311,7 +312,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     K(
         aprilTagLayout
@@ -331,7 +332,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + 0,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI))));
 
     private final Pose2d pose;
@@ -364,7 +365,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     C(
         aprilTagLayout
@@ -384,7 +385,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     E(
         aprilTagLayout
@@ -404,7 +405,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     G(
         aprilTagLayout
@@ -424,7 +425,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     I(
         aprilTagLayout
@@ -444,7 +445,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI)))),
     K(
         aprilTagLayout
@@ -464,7 +465,7 @@ public class DriveConstants {
             .plus(
                 new Transform2d(
                     trackWidth / 2 + bumperThickness,
-                    Units.inchesToMeters(13 / 2) + endEffectorOffset,
+                    Units.inchesToMeters(13 / 2) + rightAlignOffset,
                     new Rotation2d(Math.PI))));
 
     private final Pose2d pose;

@@ -50,4 +50,6 @@ public interface VisionIO {
   }
 
   default void updateInputs(VisionIOInputs inputs) {}
+
+  public default void changePipelineIndex() {}
 }

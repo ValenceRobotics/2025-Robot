@@ -28,6 +28,7 @@ import org.photonvision.PhotonCamera;
 public class VisionIOPhotonVision implements VisionIO {
   protected final PhotonCamera camera;
   protected final Transform3d robotToCamera;
+  int currentIndex = 0;
 
   /**
    * Creates a new VisionIOPhotonVision.
@@ -38,6 +39,13 @@ public class VisionIOPhotonVision implements VisionIO {
   public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
     camera = new PhotonCamera(name);
     this.robotToCamera = robotToCamera;
+    camera.setPipelineIndex(currentIndex);
+  }
+
+  @Override
+  public void changePipelineIndex() {
+    currentIndex = 1 - currentIndex;
+    camera.setPipelineIndex(currentIndex);
   }
 
   @Override

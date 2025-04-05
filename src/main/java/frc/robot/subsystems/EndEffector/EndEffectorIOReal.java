@@ -161,9 +161,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
           rightMotor.setVoltage(l1RightSpeed.get());
           // setVoltage(3);
         } else if (RobotState.getCurrentElevatorState() == ElevatorState.L2
-            || RobotState.getCurrentElevatorState() == ElevatorState.L3
             || RobotState.getCurrentElevatorState() == ElevatorState.Home) {
           setVoltage(3);
+
+        } else if (RobotState.getCurrentElevatorState() == ElevatorState.L3) {
+          setVoltage(2.5);
         } else {
           setVoltage(l4ScoreSpeed.get());
           // new WaitCommand(0.1);
@@ -171,7 +173,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         }
         break;
       case Reverse:
-        setVoltage(-1.25);
+        setVoltage(-1.5);
         break;
       case Stopped:
         stop();

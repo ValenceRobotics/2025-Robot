@@ -197,11 +197,11 @@ public class RobotContainer {
         "autoScore4",
         (StateCommands.setMechanismState(ElevatorState.L4Force))
             .andThen(
-                new WaitCommand(0.8)
+                new WaitCommand(1.4)
                     .andThen(StateCommands.setMechanismState(EndEffectorState.Score)))
             .andThen(new WaitUntilCommand(() -> RobotState.getCoralState() == CoralState.NoCoral))
             .andThen(StateCommands.setMechanismState(EndEffectorState.Stopped))
-            .withTimeout(1.2));
+            .withTimeout(1.6));
     NamedCommands.registerCommand(
         "retract4", (StateCommands.setMechanismState(ElevatorState.Home)).withTimeout(.5));
     NamedCommands.registerCommand(
@@ -285,9 +285,7 @@ public class RobotContainer {
 
     controller.leftBumper().onTrue(StateCommands.setMechanismState(ElevatorState.Home));
 
-    // controller
-    //     .rightBumper()
-    //     .onTrue(Commands.runOnce(() -> elevator.resetElevatorEncoder(), elevator));
+    controller.rightBumper().onTrue(Commands.runOnce(() -> vision.changePipelineIndex()));
 
     // reef alignment
     controller
