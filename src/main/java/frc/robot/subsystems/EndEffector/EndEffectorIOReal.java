@@ -25,7 +25,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
   CANrange canRange = new CANrange(13);
 
-  private LoggedTunableNumber l4ScoreSpeed = new LoggedTunableNumber("EndEffector/L4Score", 3);
+  private LoggedTunableNumber l4ScoreSpeed = new LoggedTunableNumber("EndEffector/L4Score", 2.5);
   private LoggedTunableNumber currentSpike =
       new LoggedTunableNumber("EndEffector/current spike", 15);
   private LoggedTunableNumber spikeTime = new LoggedTunableNumber("EndEffector/spike time", 0.1);

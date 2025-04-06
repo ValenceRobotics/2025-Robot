@@ -29,7 +29,7 @@ public class ElevatorIOReal implements ElevatorIO {
   private DigitalInput revLimitSwitch = new DigitalInput(9);
   private boolean atSetpoint = false;
 
-  private LoggedTunableNumber l4Position = new LoggedTunableNumber("Elevator/L4Position", 31.8);
+  private LoggedTunableNumber l4Position = new LoggedTunableNumber("Elevator/L4Position", 32.5);
   private LoggedTunableNumber l4ScorePosition =
       new LoggedTunableNumber("Elevator/L4ScorePosition", 32.5);
   private LoggedTunableNumber l1Position = new LoggedTunableNumber("Elevator/L1Position", 4.5);
