@@ -13,7 +13,13 @@
         {
           "type": "named",
           "data": {
-            "name": "autoScore1"
+            "name": "autoScore4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "sputter"
           }
         }
       ]
