@@ -347,7 +347,6 @@ public class RobotContainer {
                 StateCommands.setMechanismState(SystemMode.Manual),
                 () -> RobotState.getSystemMode() == SystemMode.Manual));
 
-    // Figure out button
     controller
         .button(9)
         .onTrue(
